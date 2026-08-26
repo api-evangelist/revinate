@@ -1,0 +1,1841 @@
+openapi: 3.1.0
+info:
+  title: Revinate Porter API
+  version: '1.0'
+  description: 'Revinate''s structured review data API. Provides access to hotel reviews across 100+ review sites,
+    with key metrics (review counts, average ratings), sentiment analysis, competitor review streams and survey
+    email statistics.
+
+
+    Two review streams exist and they are not interchangeable: the Review Stream (/reviews, /hotels/{hotelId}/reviews)
+    is for offline analysis and its content may NOT be used for display, while the Widget Review Stream (/widgetreviews)
+    is licensed for display/republishing but excludes TripAdvisor and Yelp content under content-licensing agreements
+    with those partners.
+
+
+    CONVERSION NOTE: Revinate publishes this contract as Swagger 1.2 at https://porter.revinate.com/api-docs. This
+    OpenAPI 3.1.0 document is a faithful mechanical conversion of the six published Swagger 1.2 resource declarations
+    by API Evangelist; the verbatim originals are preserved in openapi/_original/. Operation IDs were made unique
+    (the published nickname "get" is reused across all six resources).'
+  contact:
+    name: Revinate Support
+    email: support@revinate.com
+    url: https://www.revinate.com/support/
+  license:
+    name: Revinate API License
+    url: https://www.revinate.com/website-terms-of-use/
+servers:
+- url: https://porter.revinate.com
+  description: Revinate Porter API production base URL
+tags:
+- name: Hotel Sets
+- name: Hotels
+- name: Languages
+- name: Review Sites
+- name: Reviews
+- name: Widget Reviews
+paths:
+  /hotelsets:
+    get:
+      tags:
+      - Hotel Sets
+      summary: Get Hotel Sets
+      description: Returns a collection of hotel sets. Hotel sets are only available for corporate or group customers.
+        A hotel set is a subset of the properties belonging to the group and configurable in the Revinate Reputation
+        application. Pagination is supported by this resource.
+      operationId: listHotelSets
+      parameters:
+      - name: page
+        in: query
+        required: false
+        description: page number
+        schema:
+          type: integer
+          description: page number
+      - name: size
+        in: query
+        required: false
+        description: number of elements to show per page
+        schema:
+          type: integer
+          description: number of elements to show per page
+      - name: sort
+        in: query
+        required: false
+        description: sort field and direction (eg. ?sort=name,ASC)
+        schema:
+          type: string
+          description: sort field and direction (eg. ?sort=name,ASC)
+      responses:
+        '200':
+          description: OK
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      security:
+      - porterUsername: []
+        porterTimestamp: []
+        porterKey: []
+        porterEncoded: []
+  /hotelsets/{hotelSetId}:
+    get:
+      tags:
+      - Hotel Sets
+      summary: Get a Hotel Set
+      description: Returns a specific hotel set
+      operationId: getHotelSet
+      parameters:
+      - name: hotelSetId
+        in: path
+        required: true
+        description: hotelSetId
+        schema:
+          type: integer
+          format: int64
+          description: hotelSetId
+      responses:
+        '200':
+          description: OK
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      security:
+      - porterUsername: []
+        porterTimestamp: []
+        porterKey: []
+        porterEncoded: []
+  /hotelsets/{hotelSetId}/hotels:
+    get:
+      tags:
+      - Hotel Sets
+      summary: Get Hotels belonging to a Hotel Set
+      description: Returns the list of member hotels for a given hotel set. Pagination is available on this resource.
+      operationId: getHotelsForHotelSet
+      parameters:
+      - name: hotelSetId
+        in: path
+        required: true
+        description: hotelSetId
+        schema:
+          type: integer
+          format: int64
+          description: hotelSetId
+      responses:
+        '200':
+          description: OK
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      security:
+      - porterUsername: []
+        porterTimestamp: []
+        porterKey: []
+        porterEncoded: []
+  /hotelsets/{hotelSetId}/reviews:
+    get:
+      tags:
+      - Hotel Sets
+      summary: Get reviews for all hotels in a hotel set
+      description: Retrieve the latest reviews associated with the hotel set resource identified by hotelSetId.
+        This endpoint supports pagination and sorting if your API key is configured for it. If not configured, the
+        response will be an error if exceeding the review limit. In addition, this endpoint supports additional
+        query parameter filters (ratings, feedback, and languageSlug)
+      operationId: getReviewsForHotelSet
+      parameters:
+      - name: hotelSetId
+        in: path
+        required: true
+        description: identifier of Hotel set
+        schema:
+          type: integer
+          format: int64
+          description: identifier of Hotel set
+      - name: ratings
+        in: query
+        required: false
+        description: list of ratings (1-5) to filter the results by (eg. rating=4,5)
+        schema:
+          type: array
+          items:
+            type: integer
+            format: int32
+          description: list of ratings (1-5) to filter the results by (eg. rating=4,5)
+      - name: feedback
+        in: query
+        required: false
+        description: type of feedback to filter results by. Valid values are [positive, neutral, negative]
+        schema:
+          type: string
+          description: type of feedback to filter results by. Valid values are [positive, neutral, negative]
+      - name: response
+        in: query
+        required: false
+        description: response status to filter results by. Valid values are [none, posted]
+        schema:
+          type: string
+          description: response status to filter results by. Valid values are [none, posted]
+      - name: languageSlug
+        in: query
+        required: false
+        description: slug of the language to filter results by. Valid values are from the '/languages' endpoint
+        schema:
+          type: string
+          description: slug of the language to filter results by. Valid values are from the '/languages' endpoint
+      - name: reviewSiteSlug
+        in: query
+        required: false
+        description: slug of the review site to filter results by. Valid values are from the '/reviewsites' endpoint
+        schema:
+          type: string
+          description: slug of the review site to filter results by. Valid values are from the '/reviewsites' endpoint
+      - name: dateCollected
+        in: query
+        required: false
+        description: Filter reviews using dateCollected field with an epoch seconds date range of format {start}..{end}
+          (eg. 1389402398..1420938399). This query parameter is only available for Revinate customers
+        schema:
+          type: string
+          description: Filter reviews using dateCollected field with an epoch seconds date range of format {start}..{end}
+            (eg. 1389402398..1420938399). This query parameter is only available for Revinate customers
+      - name: updatedAt
+        in: query
+        required: false
+        description: Filter reviews using updatedAt field with an epoch seconds date range of format {start}..{end}
+          (eg. 1389402398..1420938399). This query parameter is only available for Revinate customers
+        schema:
+          type: string
+          description: Filter reviews using updatedAt field with an epoch seconds date range of format {start}..{end}
+            (eg. 1389402398..1420938399). This query parameter is only available for Revinate customers
+      - name: page
+        in: query
+        required: false
+        description: page number
+        schema:
+          type: integer
+          description: page number
+      - name: size
+        in: query
+        required: false
+        description: number of elements to show per page
+        schema:
+          type: integer
+          description: number of elements to show per page
+      - name: sort
+        in: query
+        required: false
+        description: sort field and direction (eg. ?sort=rating,desc)
+        schema:
+          type: string
+          description: sort field and direction (eg. ?sort=rating,desc)
+      responses:
+        '200':
+          description: OK
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      security:
+      - porterUsername: []
+        porterTimestamp: []
+        porterKey: []
+        porterEncoded: []
+  /hotels:
+    get:
+      tags:
+      - Hotels
+      summary: Get Hotels
+      description: Retrieve a list view of all hotels accessible to the API key provided. Pagination is supported
+        by this resource.
+      operationId: listHotels
+      parameters:
+      - name: page
+        in: query
+        required: false
+        description: page number
+        schema:
+          type: integer
+          description: page number
+      - name: size
+        in: query
+        required: false
+        description: number of elements to show per page
+        schema:
+          type: integer
+          description: number of elements to show per page
+      - name: sort
+        in: query
+        required: false
+        description: sort field and direction (eg. ?sort=name,ASC)
+        schema:
+          type: string
+          description: sort field and direction (eg. ?sort=name,ASC)
+      responses:
+        '200':
+          description: OK
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      security:
+      - porterUsername: []
+        porterTimestamp: []
+        porterKey: []
+        porterEncoded: []
+  /hotels/{hotelId}:
+    get:
+      tags:
+      - Hotels
+      summary: Get a Hotel
+      description: Retrieve a hotel resource by primary hotel id.
+      operationId: getHotel
+      parameters:
+      - name: hotelId
+        in: path
+        required: true
+        description: identifier of Hotel
+        schema:
+          type: integer
+          format: int64
+          description: identifier of Hotel
+      responses:
+        '200':
+          description: OK
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      security:
+      - porterUsername: []
+        porterTimestamp: []
+        porterKey: []
+        porterEncoded: []
+  /hotels/{hotelId}/competitorhotels:
+    get:
+      tags:
+      - Hotels
+      summary: Get competitor hotels for a hotel
+      description: Retrieve a list of competitor hotels for the hotel with the given hotel id.
+      operationId: getCompetitorHotelsByHotelId
+      parameters:
+      - name: hotelId
+        in: path
+        required: true
+        description: identifier of Hotel
+        schema:
+          type: integer
+          format: int64
+          description: identifier of Hotel
+      - name: page
+        in: query
+        required: false
+        description: page number
+        schema:
+          type: integer
+          description: page number
+      - name: size
+        in: query
+        required: false
+        description: number of elements to show per page
+        schema:
+          type: integer
+          description: number of elements to show per page
+      - name: sort
+        in: query
+        required: false
+        description: sort field and direction (eg. ?sort=name,ASC)
+        schema:
+          type: string
+          description: sort field and direction (eg. ?sort=name,ASC)
+      responses:
+        '200':
+          description: OK
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      security:
+      - porterUsername: []
+        porterTimestamp: []
+        porterKey: []
+        porterEncoded: []
+  /hotels/{hotelId}/competitorreviews:
+    get:
+      tags:
+      - Hotels
+      summary: Get competitor reviews for a hotel
+      description: Retrieve the latest reviews associated with competitor hotels for the hotel identified by hotelId.
+        This endpoint supports pagination and sorting if your API key is configured for it. If not configured, the
+        response will be an error if exceeding the review limit. In addition, this endpoint supports query parameter
+        filtering by competitor hotel slug.
+      operationId: getCompetitorReviewsByHotelId
+      parameters:
+      - name: hotelId
+        in: path
+        required: true
+        description: identifier of Hotel
+        schema:
+          type: integer
+          format: int64
+          description: identifier of Hotel
+      - name: competitorHotelSlug
+        in: query
+        required: false
+        description: slug of competitor hotel
+        schema:
+          type: string
+          description: slug of competitor hotel
+      - name: dateCollected
+        in: query
+        required: false
+        description: Filter reviews using dateCollected field with an epoch seconds date range of format {start}..{end}
+          (eg. 1389402398..1420938399). This query parameter is only available for Revinate customers
+        schema:
+          type: string
+          description: Filter reviews using dateCollected field with an epoch seconds date range of format {start}..{end}
+            (eg. 1389402398..1420938399). This query parameter is only available for Revinate customers
+      - name: updatedAt
+        in: query
+        required: false
+        description: Filter reviews using updatedAt field with an epoch seconds date range of format {start}..{end}
+          (eg. 1389402398..1420938399). This query parameter is only available for Revinate customers
+        schema:
+          type: string
+          description: Filter reviews using updatedAt field with an epoch seconds date range of format {start}..{end}
+            (eg. 1389402398..1420938399). This query parameter is only available for Revinate customers
+      - name: page
+        in: query
+        required: false
+        description: page number
+        schema:
+          type: integer
+          description: page number
+      - name: size
+        in: query
+        required: false
+        description: number of elements to show per page
+        schema:
+          type: integer
+          description: number of elements to show per page
+      - name: sort
+        in: query
+        required: false
+        description: sort field and direction (eg. ?sort=rating,desc)
+        schema:
+          type: string
+          description: sort field and direction (eg. ?sort=rating,desc)
+      responses:
+        '200':
+          description: OK
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      security:
+      - porterUsername: []
+        porterTimestamp: []
+        porterKey: []
+        porterEncoded: []
+  /hotels/{hotelId}/hotelsets:
+    get:
+      tags:
+      - Hotels
+      summary: Get Hotel sets
+      description: Retrieve a list view of all hotel sets for a given Corporate group. Pagination is supported by
+        this resource.
+      operationId: getHotelSetsForCorporateHotel
+      parameters:
+      - name: hotelId
+        in: path
+        required: true
+        description: identifier of Corporate group
+        schema:
+          type: integer
+          format: int64
+          description: identifier of Corporate group
+      - name: page
+        in: query
+        required: false
+        description: page number
+        schema:
+          type: integer
+          description: page number
+      - name: size
+        in: query
+        required: false
+        description: number of elements to show per page
+        schema:
+          type: integer
+          description: number of elements to show per page
+      - name: sort
+        in: query
+        required: false
+        description: sort field and direction (eg. ?sort=name,ASC)
+        schema:
+          type: string
+          description: sort field and direction (eg. ?sort=name,ASC)
+      responses:
+        '200':
+          description: OK
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      security:
+      - porterUsername: []
+        porterTimestamp: []
+        porterKey: []
+        porterEncoded: []
+  /hotels/{hotelId}/reviews:
+    get:
+      tags:
+      - Hotels
+      summary: Get reviews for a hotel
+      description: Retrieve the latest reviews associated with the hotel resource identified by hotelId. This endpoint
+        supports pagination and sorting if your API key is configured for it. If not configured, the response will
+        be an error if exceeding the review limit. In addition, this endpoint supports additional query parameter
+        filters (ratings, feedback, and languageSlug)
+      operationId: getReviewsByHotelId
+      parameters:
+      - name: hotelId
+        in: path
+        required: true
+        description: identifier of Hotel
+        schema:
+          type: integer
+          format: int64
+          description: identifier of Hotel
+      - name: ratings
+        in: query
+        required: false
+        description: list of ratings (1-5) to filter the results by (eg. rating=4,5)
+        schema:
+          type: array
+          items:
+            type: integer
+            format: int32
+          description: list of ratings (1-5) to filter the results by (eg. rating=4,5)
+      - name: feedback
+        in: query
+        required: false
+        description: type of feedback to filter results by. Valid values are [positive, neutral, negative]
+        schema:
+          type: string
+          description: type of feedback to filter results by. Valid values are [positive, neutral, negative]
+      - name: response
+        in: query
+        required: false
+        description: response status to filter results by. Valid values are [none, posted]
+        schema:
+          type: string
+          description: response status to filter results by. Valid values are [none, posted]
+      - name: languageSlug
+        in: query
+        required: false
+        description: slug of the language to filter results by. Valid values are from the '/languages' endpoint
+        schema:
+          type: string
+          description: slug of the language to filter results by. Valid values are from the '/languages' endpoint
+      - name: reviewSiteSlug
+        in: query
+        required: false
+        description: slug of the review site to filter results by. Valid values are from the '/reviewsites' endpoint
+        schema:
+          type: string
+          description: slug of the review site to filter results by. Valid values are from the '/reviewsites' endpoint
+      - name: dateCollected
+        in: query
+        required: false
+        description: Filter reviews using dateCollected field with an epoch seconds date range of format {start}..{end}
+          (eg. 1389402398..1420938399). This query parameter is only available for Revinate customers
+        schema:
+          type: string
+          description: Filter reviews using dateCollected field with an epoch seconds date range of format {start}..{end}
+            (eg. 1389402398..1420938399). This query parameter is only available for Revinate customers
+      - name: updatedAt
+        in: query
+        required: false
+        description: Filter reviews using updatedAt field with an epoch seconds date range of format {start}..{end}
+          (eg. 1389402398..1420938399). This query parameter is only available for Revinate customers
+        schema:
+          type: string
+          description: Filter reviews using updatedAt field with an epoch seconds date range of format {start}..{end}
+            (eg. 1389402398..1420938399). This query parameter is only available for Revinate customers
+      - name: page
+        in: query
+        required: false
+        description: page number
+        schema:
+          type: integer
+          description: page number
+      - name: size
+        in: query
+        required: false
+        description: number of elements to show per page
+        schema:
+          type: integer
+          description: number of elements to show per page
+      - name: sort
+        in: query
+        required: false
+        description: sort field and direction (eg. ?sort=rating,desc)
+        schema:
+          type: string
+          description: sort field and direction (eg. ?sort=rating,desc)
+      responses:
+        '200':
+          description: OK
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      security:
+      - porterUsername: []
+        porterTimestamp: []
+        porterKey: []
+        porterEncoded: []
+  /hotels/{hotelId}/reviewssnapshot:
+    get:
+      tags:
+      - Hotels
+      summary: Get reviews snapshot for a hotel
+      description: Retrieve analytic data for the reviews of the hotel identified by hotelId. This resource supports
+        date filtering
+      operationId: getReviewsSnapshotByHotelId
+      parameters:
+      - name: hotelId
+        in: path
+        required: true
+        description: identifier of Hotel
+        schema:
+          type: integer
+          format: int64
+          description: identifier of Hotel
+      - name: date
+        in: query
+        required: false
+        description: epoch seconds date range of format {start}..{end} (eg. 1389402398..1420938399)
+        schema:
+          type: string
+          description: epoch seconds date range of format {start}..{end} (eg. 1389402398..1420938399)
+      responses:
+        '200':
+          description: OK
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      security:
+      - porterUsername: []
+        porterTimestamp: []
+        porterKey: []
+        porterEncoded: []
+  /hotels/{hotelId}/surveyemailstats:
+    get:
+      tags:
+      - Hotels
+      summary: Get survey email statistics for hotel
+      description: Retrieve survey email statistics of hotel identified by hotelId. This resource supports date
+        filtering
+      operationId: getSurveyEmailStatsByHotelId
+      parameters:
+      - name: hotelId
+        in: path
+        required: true
+        description: identifier of Hotel
+        schema:
+          type: integer
+          format: int64
+          description: identifier of Hotel
+      - name: date
+        in: query
+        required: false
+        description: epoch seconds date range of format {start}..{end} (eg. 1389402398..1420938399)
+        schema:
+          type: string
+          description: epoch seconds date range of format {start}..{end} (eg. 1389402398..1420938399)
+      responses:
+        '200':
+          description: OK
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      security:
+      - porterUsername: []
+        porterTimestamp: []
+        porterKey: []
+        porterEncoded: []
+  /hotels/{hotelId}/topiccategoriessnapshot:
+    get:
+      tags:
+      - Hotels
+      summary: Get category level sentiment analysis for hotel
+      description: Retrieve sentiment analytics data for each parent category of hotel identified by hotelId. This
+        resource supports date filtering.
+      operationId: getSentimentSnapshotByHotelId
+      parameters:
+      - name: hotelId
+        in: path
+        required: true
+        description: identifier of Hotel
+        schema:
+          type: integer
+          format: int64
+          description: identifier of Hotel
+      - name: date
+        in: query
+        required: false
+        description: epoch seconds date range of format {start}..{end} (eg. 1389402398..1420938399)
+        schema:
+          type: string
+          description: epoch seconds date range of format {start}..{end} (eg. 1389402398..1420938399)
+      responses:
+        '200':
+          description: OK
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      security:
+      - porterUsername: []
+        porterTimestamp: []
+        porterKey: []
+        porterEncoded: []
+  /hotels/{hotelId}/topicssnapshot:
+    get:
+      tags:
+      - Hotels
+      summary: Get child level sentiment analysis for hotel
+      description: Retrieve sentiment analytics data for each child category of hotel identified by hotelId. This
+        resource supports date filtering. In addition, this resource also supports filtering by the topic category
+        id. By default, the endpoint returns all child entries of the "Overall" category (topicCategoryId = 0) which
+        includes all children.
+      operationId: getSentimentBreakdownByHotelIdAndTopicCategoryId
+      parameters:
+      - name: hotelId
+        in: path
+        required: true
+        description: identifier of Hotel
+        schema:
+          type: integer
+          format: int64
+          description: identifier of Hotel
+      - name: topicCategoryId
+        in: query
+        required: false
+        description: id of the topic category to filter child categories
+        schema:
+          type: integer
+          format: int32
+          description: id of the topic category to filter child categories
+      - name: date
+        in: query
+        required: false
+        description: epoch seconds date range of format {start}..{end} (eg. 1389402398..1420938399)
+        schema:
+          type: string
+          description: epoch seconds date range of format {start}..{end} (eg. 1389402398..1420938399)
+      - name: reviewSiteSlug
+        in: query
+        required: false
+        description: slug of the review site to filter results by. Valid values are from the '/reviewsites' endpoint
+        schema:
+          type: string
+          description: slug of the review site to filter results by. Valid values are from the '/reviewsites' endpoint
+      responses:
+        '200':
+          description: OK
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      security:
+      - porterUsername: []
+        porterTimestamp: []
+        porterKey: []
+        porterEncoded: []
+  /hotels/{hotelId}/widgetreviews:
+    get:
+      tags:
+      - Hotels
+      summary: Get reviews for a hotel suitable for display or republishing
+      description: Retrieve the latest reviews associated with the hotel resource identified by hotelId suitable
+        for display or republishing. This endpoint supports pagination and sorting if your API key is configured
+        for it. If not configured, the response will be an error if exceeding the review limit. In addition, this
+        endpoint supports additional query parameter filters (ratings, feedback, and languageSlug)
+      operationId: getWidgetReviewsByHotelId
+      parameters:
+      - name: hotelId
+        in: path
+        required: true
+        description: identifier of Hotel
+        schema:
+          type: integer
+          format: int64
+          description: identifier of Hotel
+      - name: ratings
+        in: query
+        required: false
+        description: list of ratings (1-5) to filter the results by (eg. rating=4,5)
+        schema:
+          type: array
+          items:
+            type: integer
+            format: int32
+          description: list of ratings (1-5) to filter the results by (eg. rating=4,5)
+      - name: feedback
+        in: query
+        required: false
+        description: type of feedback to filter results by. Valid values are [positive, neutral, negative]
+        schema:
+          type: string
+          description: type of feedback to filter results by. Valid values are [positive, neutral, negative]
+      - name: response
+        in: query
+        required: false
+        description: response status to filter results by. Valid values are [none, posted]
+        schema:
+          type: string
+          description: response status to filter results by. Valid values are [none, posted]
+      - name: languageSlug
+        in: query
+        required: false
+        description: slug of the language to filter results by. Valid values are from the '/languages' endpoint
+        schema:
+          type: string
+          description: slug of the language to filter results by. Valid values are from the '/languages' endpoint
+      - name: reviewSiteSlug
+        in: query
+        required: false
+        description: slug of the review site to filter results by. Valid values are from the '/reviewsites' endpoint
+        schema:
+          type: string
+          description: slug of the review site to filter results by. Valid values are from the '/reviewsites' endpoint
+      - name: dateCollected
+        in: query
+        required: false
+        description: Filter reviews using dateCollected field with an epoch seconds date range of format {start}..{end}
+          (eg. 1389402398..1420938399). This query parameter is only available for Revinate customers
+        schema:
+          type: string
+          description: Filter reviews using dateCollected field with an epoch seconds date range of format {start}..{end}
+            (eg. 1389402398..1420938399). This query parameter is only available for Revinate customers
+      - name: updatedAt
+        in: query
+        required: false
+        description: Filter reviews using updatedAt field with an epoch seconds date range of format {start}..{end}
+          (eg. 1389402398..1420938399). This query parameter is only available for Revinate customers
+        schema:
+          type: string
+          description: Filter reviews using updatedAt field with an epoch seconds date range of format {start}..{end}
+            (eg. 1389402398..1420938399). This query parameter is only available for Revinate customers
+      - name: page
+        in: query
+        required: false
+        description: page number
+        schema:
+          type: integer
+          description: page number
+      - name: size
+        in: query
+        required: false
+        description: number of elements to show per page
+        schema:
+          type: integer
+          description: number of elements to show per page
+      - name: sort
+        in: query
+        required: false
+        description: sort field and direction (eg. ?sort=rating,desc)
+        schema:
+          type: string
+          description: sort field and direction (eg. ?sort=rating,desc)
+      responses:
+        '200':
+          description: OK
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      security:
+      - porterUsername: []
+        porterTimestamp: []
+        porterKey: []
+        porterEncoded: []
+  /languages:
+    get:
+      tags:
+      - Languages
+      summary: Get Languages
+      description: Retrieve a list view of languages supported on the review stream. This resource supports pagination.
+        Moreover, the slug field returned can be used as a filter on the '/reviews' resource to only return reviews
+        with the given language
+      operationId: listLanguages
+      parameters:
+      - name: page
+        in: query
+        required: false
+        description: page number
+        schema:
+          type: integer
+          description: page number
+      - name: size
+        in: query
+        required: false
+        description: number of elements to show per page
+        schema:
+          type: integer
+          description: number of elements to show per page
+      - name: sort
+        in: query
+        required: false
+        description: sort field and direction (eg. ?sort=name,ASC)
+        schema:
+          type: string
+          description: sort field and direction (eg. ?sort=name,ASC)
+      responses:
+        '200':
+          description: OK
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      security:
+      - porterUsername: []
+        porterTimestamp: []
+        porterKey: []
+        porterEncoded: []
+  /languages/{languageId}:
+    get:
+      tags:
+      - Languages
+      summary: Get a Language
+      description: Retrieve a language resource by primary language id.
+      operationId: getLanguage
+      parameters:
+      - name: languageId
+        in: path
+        required: true
+        description: identifier of Language
+        schema:
+          type: integer
+          format: int64
+          description: identifier of Language
+      responses:
+        '200':
+          description: OK
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      security:
+      - porterUsername: []
+        porterTimestamp: []
+        porterKey: []
+        porterEncoded: []
+  /reviewsites:
+    get:
+      tags:
+      - Review Sites
+      summary: Get Review Sites
+      description: Retrieve a list view of review sites. This resource supports pagination.
+      operationId: listReviewSites
+      parameters:
+      - name: page
+        in: query
+        required: false
+        description: page number
+        schema:
+          type: integer
+          description: page number
+      - name: size
+        in: query
+        required: false
+        description: number of elements to show per page
+        schema:
+          type: integer
+          description: number of elements to show per page
+      - name: sort
+        in: query
+        required: false
+        description: sort field and direction (eg. ?sort=name,ASC)
+        schema:
+          type: string
+          description: sort field and direction (eg. ?sort=name,ASC)
+      responses:
+        '200':
+          description: OK
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      security:
+      - porterUsername: []
+        porterTimestamp: []
+        porterKey: []
+        porterEncoded: []
+  /reviewsites/{reviewSiteId}:
+    get:
+      tags:
+      - Review Sites
+      summary: Get a Review Site
+      description: Retrieve a review site resource by primary review site id.
+      operationId: getReviewSite
+      parameters:
+      - name: reviewSiteId
+        in: path
+        required: true
+        description: identifier of Review Site
+        schema:
+          type: integer
+          format: int64
+          description: identifier of Review Site
+      responses:
+        '200':
+          description: OK
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      security:
+      - porterUsername: []
+        porterTimestamp: []
+        porterKey: []
+        porterEncoded: []
+  /reviews:
+    get:
+      tags:
+      - Reviews
+      summary: Get Reviews
+      description: Retrieve the latest reviews associated with hotels API key has access to. This endpoint supports
+        pagination and sorting if your API key is configured for it. If your page and size parameters exceed the
+        review limit, this endpoint returns an error. In addition, this endpoint supports additional query parameter
+        filters (ratings, feedback, and languageSlug)
+      operationId: listReviews
+      parameters:
+      - name: ratings
+        in: query
+        required: false
+        description: list of ratings (1-5) to filter the results by (eg. rating=4,5)
+        schema:
+          type: array
+          items:
+            type: integer
+            format: int32
+          description: list of ratings (1-5) to filter the results by (eg. rating=4,5)
+      - name: feedback
+        in: query
+        required: false
+        description: type of feedback to filter results by. Valid values are [positive, neutral, negative]
+        schema:
+          type: string
+          description: type of feedback to filter results by. Valid values are [positive, neutral, negative]
+      - name: response
+        in: query
+        required: false
+        description: response status to filter results by. Valid values are [none, posted]
+        schema:
+          type: string
+          description: response status to filter results by. Valid values are [none, posted]
+      - name: languageSlug
+        in: query
+        required: false
+        description: slug of the language to filter results by. Valid values are from the '/languages' endpoint
+        schema:
+          type: string
+          description: slug of the language to filter results by. Valid values are from the '/languages' endpoint
+      - name: reviewSiteSlug
+        in: query
+        required: false
+        description: slug of the review site to filter results by. Valid values are from the '/reviewsites' endpoint
+        schema:
+          type: string
+          description: slug of the review site to filter results by. Valid values are from the '/reviewsites' endpoint
+      - name: dateCollected
+        in: query
+        required: false
+        description: Filter reviews using dateCollected field with an epoch seconds date range of format {start}..{end}
+          (eg. 1389402398..1420938399). This query parameter is only available for Revinate customers
+        schema:
+          type: string
+          description: Filter reviews using dateCollected field with an epoch seconds date range of format {start}..{end}
+            (eg. 1389402398..1420938399). This query parameter is only available for Revinate customers
+      - name: updatedAt
+        in: query
+        required: false
+        description: Filter reviews using updatedAt field with an epoch seconds date range of format {start}..{end}
+          (eg. 1389402398..1420938399). This query parameter is only available for Revinate customers
+        schema:
+          type: string
+          description: Filter reviews using updatedAt field with an epoch seconds date range of format {start}..{end}
+            (eg. 1389402398..1420938399). This query parameter is only available for Revinate customers
+      - name: page
+        in: query
+        required: false
+        description: page number
+        schema:
+          type: integer
+          description: page number
+      - name: size
+        in: query
+        required: false
+        description: number of elements to show per page
+        schema:
+          type: integer
+          description: number of elements to show per page
+      - name: sort
+        in: query
+        required: false
+        description: sort field and direction (eg. ?sort=rating,desc)
+        schema:
+          type: string
+          description: sort field and direction (eg. ?sort=rating,desc)
+      responses:
+        '200':
+          description: OK
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      security:
+      - porterUsername: []
+        porterTimestamp: []
+        porterKey: []
+        porterEncoded: []
+  /reviews/{reviewId}:
+    get:
+      tags:
+      - Reviews
+      summary: Get a review
+      description: Retrieve a review resource by primary review id.
+      operationId: getReview
+      parameters:
+      - name: reviewId
+        in: path
+        required: true
+        description: identifier of Review
+        schema:
+          type: integer
+          format: int64
+          description: identifier of Review
+      responses:
+        '200':
+          description: OK
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      security:
+      - porterUsername: []
+        porterTimestamp: []
+        porterKey: []
+        porterEncoded: []
+  /widgetreviews:
+    get:
+      tags:
+      - Widget Reviews
+      summary: Get reviews suitable for display or republishing
+      description: Retrieve the latest reviews associated with hotels API key has access to, suitable for display
+        or republishing. This endpoint supports pagination and sorting if your API key is configured for it. If
+        your page and size parameters exceed the review limit, this endpoint returns an error. In addition, this
+        endpoint supports additional query parameter filters (ratings, feedback, and languageSlug)
+      operationId: listWidgetReviews
+      parameters:
+      - name: ratings
+        in: query
+        required: false
+        description: list of ratings (1-5) to filter the results by (eg. rating=4,5)
+        schema:
+          type: array
+          items:
+            type: integer
+            format: int32
+          description: list of ratings (1-5) to filter the results by (eg. rating=4,5)
+      - name: feedback
+        in: query
+        required: false
+        description: type of feedback to filter results by. Valid values are [positive, neutral, negative]
+        schema:
+          type: string
+          description: type of feedback to filter results by. Valid values are [positive, neutral, negative]
+      - name: response
+        in: query
+        required: false
+        description: response status to filter results by. Valid values are [none, posted]
+        schema:
+          type: string
+          description: response status to filter results by. Valid values are [none, posted]
+      - name: languageSlug
+        in: query
+        required: false
+        description: slug of the language to filter results by. Valid values are from the '/languages' endpoint
+        schema:
+          type: string
+          description: slug of the language to filter results by. Valid values are from the '/languages' endpoint
+      - name: reviewSiteSlug
+        in: query
+        required: false
+        description: slug of the review site to filter results by. Valid values are from the '/reviewsites' endpoint
+        schema:
+          type: string
+          description: slug of the review site to filter results by. Valid values are from the '/reviewsites' endpoint
+      - name: dateCollected
+        in: query
+        required: false
+        description: Filter reviews using dateCollected field with an epoch seconds date range of format {start}..{end}
+          (eg. 1389402398..1420938399). This query parameter is only available for Revinate customers
+        schema:
+          type: string
+          description: Filter reviews using dateCollected field with an epoch seconds date range of format {start}..{end}
+            (eg. 1389402398..1420938399). This query parameter is only available for Revinate customers
+      - name: page
+        in: query
+        required: false
+        description: page number
+        schema:
+          type: integer
+          description: page number
+      - name: size
+        in: query
+        required: false
+        description: number of elements to show per page
+        schema:
+          type: integer
+          description: number of elements to show per page
+      - name: sort
+        in: query
+        required: false
+        description: sort field and direction (eg. ?sort=rating,desc)
+        schema:
+          type: string
+          description: sort field and direction (eg. ?sort=rating,desc)
+      responses:
+        '200':
+          description: OK
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      security:
+      - porterUsername: []
+        porterTimestamp: []
+        porterKey: []
+        porterEncoded: []
+components:
+  securitySchemes:
+    porterUsername:
+      type: apiKey
+      in: header
+      name: X-Revinate-Porter-Username
+      description: Username with access to the requested resources and to the API key used.
+    porterTimestamp:
+      type: apiKey
+      in: header
+      name: X-Revinate-Porter-Timestamp
+      description: Epoch-seconds timestamp; must be within 5 minutes (before or after) of the request.
+    porterKey:
+      type: apiKey
+      in: header
+      name: X-Revinate-Porter-Key
+      description: API key issued by Revinate (contact your sales rep or account manager).
+    porterEncoded:
+      type: apiKey
+      in: header
+      name: X-Revinate-Porter-Encoded
+      description: HMAC_SHA256(apiSecret, username + timestamp), hex-encoded.
+  schemas:
+    Collection_HotelRep:
+      type: object
+    Collection_HotelSetRep:
+      type: object
+    Collection_LanguageRep:
+      type: object
+    Collection_ReviewRep:
+      type: object
+    Collection_ReviewSiteRep:
+      type: object
+    HotelRep:
+      type: object
+      properties:
+        name:
+          type: string
+        slug:
+          type: string
+        logo:
+          type: string
+        url:
+          type: string
+        address1:
+          type: string
+        address2:
+          type: string
+        city:
+          type: string
+        state:
+          type: string
+        postalCode:
+          type: string
+        country:
+          type: string
+        tripAdvisorId:
+          type: integer
+          format: int64
+        revinatePurchaseUri:
+          type: string
+        revinateLoginUri:
+          type: string
+        accountType:
+          type: string
+        links:
+          type: array
+          items:
+            $ref: '#/components/schemas/Link'
+    HotelSetRep:
+      type: object
+      properties:
+        name:
+          type: string
+        corporateHotel:
+          $ref: '#/components/schemas/HotelRep'
+        type:
+          type: string
+        links:
+          type: array
+          items:
+            $ref: '#/components/schemas/Link'
+    LanguageRep:
+      type: object
+      properties:
+        name:
+          type: string
+        englishName:
+          type: string
+        slug:
+          type: string
+        links:
+          type: array
+          items:
+            $ref: '#/components/schemas/Link'
+    Link:
+      type: object
+      properties:
+        rel:
+          type: string
+        href:
+          type: string
+        templated:
+          type: boolean
+    PageMetadata:
+      type: object
+      properties:
+        size:
+          type: integer
+          format: int64
+        totalElements:
+          type: integer
+          format: int64
+        totalPages:
+          type: integer
+          format: int64
+        number:
+          type: integer
+          format: int64
+    PagedResources_HotelRep:
+      type: object
+      properties:
+        links:
+          type: array
+          items:
+            $ref: '#/components/schemas/Link'
+        content:
+          $ref: '#/components/schemas/Collection_HotelRep'
+        page:
+          $ref: '#/components/schemas/PageMetadata'
+    PagedResources_HotelSetRep:
+      type: object
+      properties:
+        links:
+          type: array
+          items:
+            $ref: '#/components/schemas/Link'
+        content:
+          $ref: '#/components/schemas/Collection_HotelSetRep'
+        page:
+          $ref: '#/components/schemas/PageMetadata'
+    PagedResources_LanguageRep:
+      type: object
+      properties:
+        links:
+          type: array
+          items:
+            $ref: '#/components/schemas/Link'
+        content:
+          $ref: '#/components/schemas/Collection_LanguageRep'
+        page:
+          $ref: '#/components/schemas/PageMetadata'
+    PagedResources_ReviewRep:
+      type: object
+      properties:
+        links:
+          type: array
+          items:
+            $ref: '#/components/schemas/Link'
+        content:
+          $ref: '#/components/schemas/Collection_ReviewRep'
+        page:
+          $ref: '#/components/schemas/PageMetadata'
+    PagedResources_ReviewSiteRep:
+      type: object
+      properties:
+        links:
+          type: array
+          items:
+            $ref: '#/components/schemas/Link'
+        content:
+          $ref: '#/components/schemas/Collection_ReviewSiteRep'
+        page:
+          $ref: '#/components/schemas/PageMetadata'
+    PorterError:
+      type: object
+      description: Error envelope observed on live unauthenticated requests to porter.revinate.com (Spring Boot
+        style). Not declared in the published Swagger 1.2 resource declarations; captured by probe on 2026-08-26.
+      properties:
+        timestamp:
+          type: integer
+          format: int64
+          description: Epoch milliseconds when the error was generated.
+        status:
+          type: integer
+          format: int32
+          description: HTTP status code.
+        error:
+          type: string
+          description: HTTP status reason phrase, e.g. "Unauthorized".
+        message:
+          type: string
+          description: Human-readable error message.
+        path:
+          type: string
+          description: Request path that produced the error.
+    QuestionAnswerRep:
+      type: object
+      properties:
+        question:
+          $ref: '#/components/schemas/QuestionRep'
+        yesNoAnswer:
+          type: string
+        textAnswer:
+          type: string
+        ratingAnswer:
+          type: integer
+          format: int32
+        rangeAnswer:
+          type: integer
+          format: int32
+        multipleChoiceAnswers:
+          type: array
+          items:
+            $ref: '#/components/schemas/QuestionMultipleChoiceOptionRep'
+        notApplicableAnswer:
+          type: boolean
+    QuestionMultipleChoiceOptionRep:
+      type: object
+      properties:
+        position:
+          type: integer
+          format: int64
+        text:
+          type: string
+    QuestionRangeOptionRep:
+      type: object
+      properties:
+        leftValue:
+          type: integer
+          format: int32
+        rightValue:
+          type: integer
+          format: int32
+        step:
+          type: integer
+          format: int32
+        leftText:
+          type: string
+        rightText:
+          type: string
+    QuestionRep:
+      type: object
+      properties:
+        name:
+          type: string
+        type:
+          type: string
+          enum:
+          - rating
+          - range
+          - text
+          - yes_no
+          - multi_single
+          - multi_multi
+          - photo
+          - short_text
+          - gdp
+        rangeConfig:
+          $ref: '#/components/schemas/QuestionRangeOptionRep'
+        multipleChoiceOptions:
+          type: array
+          items:
+            $ref: '#/components/schemas/QuestionMultipleChoiceOptionRep'
+    ResponseRep:
+      type: object
+      properties:
+        body:
+          type: string
+        author:
+          type: string
+        date:
+          type: integer
+          format: int32
+    ReviewRep:
+      type: object
+      properties:
+        title:
+          type: string
+        body:
+          type: string
+        author:
+          type: string
+        authorLocation:
+          type: string
+        dateReview:
+          type: integer
+          format: int32
+        dateCollected:
+          type: integer
+          format: int32
+        updatedAt:
+          type: integer
+          format: int32
+        rating:
+          type: integer
+          format: int64
+        nps:
+          type: integer
+          format: int32
+        reviewSite:
+          $ref: '#/components/schemas/ReviewSiteRep'
+        language:
+          $ref: '#/components/schemas/LanguageRep'
+        crawledUrl:
+          type: string
+        subratings:
+          $ref: '#/components/schemas/object'
+        tripType:
+          type: string
+        guestStay:
+          $ref: '#/components/schemas/SurveyGuestStayRep'
+        surveyTopics:
+          type: array
+          items:
+            $ref: '#/components/schemas/SurveyTopicRep'
+        response:
+          $ref: '#/components/schemas/ResponseRep'
+        links:
+          type: array
+          items:
+            $ref: '#/components/schemas/Link'
+    ReviewSiteRep:
+      type: object
+      properties:
+        name:
+          type: string
+        mainUrl:
+          type: string
+        slug:
+          type: string
+        links:
+          type: array
+          items:
+            $ref: '#/components/schemas/Link'
+    ReviewSiteValues:
+      type: object
+      properties:
+        reviewSiteId:
+          type: integer
+          format: int64
+        reviewSite:
+          $ref: '#/components/schemas/ReviewSiteRep'
+        values:
+          $ref: '#/components/schemas/Values'
+    ReviewsSnapshotRep:
+      type: object
+      properties:
+        aggregateValues:
+          $ref: '#/components/schemas/Values'
+        valuesByReviewSite:
+          type: array
+          items:
+            $ref: '#/components/schemas/ReviewSiteValues'
+        valuesByTime:
+          type: array
+          items:
+            $ref: '#/components/schemas/TimeValues'
+        links:
+          type: array
+          items:
+            $ref: '#/components/schemas/Link'
+    SurveyEmailStatsRep:
+      type: object
+      properties:
+        uniqueClicks:
+          type: integer
+          format: int32
+        delivered:
+          type: integer
+          format: int32
+        spamReports:
+          type: integer
+          format: int32
+        unsubscribes:
+          type: integer
+          format: int32
+        uniqueOpens:
+          type: integer
+          format: int32
+        bounces:
+          type: integer
+          format: int32
+        requests:
+          type: integer
+          format: int32
+        sent:
+          type: integer
+          format: int32
+        bounceDrops:
+          type: integer
+          format: int32
+        invalidEmails:
+          type: integer
+          format: int32
+        uniqueViews:
+          type: integer
+          format: int32
+        links:
+          type: array
+          items:
+            $ref: '#/components/schemas/Link'
+    SurveyGuestRep:
+      type: object
+      properties:
+        title:
+          type: string
+        firstName:
+          type: string
+        lastName:
+          type: string
+        phone:
+          type: string
+        email:
+          type: string
+        address:
+          type: string
+        address2:
+          type: string
+        city:
+          type: string
+        state:
+          type: string
+        country:
+          type: string
+        postalCode:
+          type: string
+        links:
+          type: array
+          items:
+            $ref: '#/components/schemas/Link'
+    SurveyGuestStayRep:
+      type: object
+      properties:
+        checkinDate:
+          type: string
+          format: date-time
+        checkoutDate:
+          type: string
+          format: date-time
+        loyaltyId:
+          type: string
+        confirmationCode:
+          type: string
+        bookingChannel:
+          type: string
+        roomType:
+          type: string
+        roomNumber:
+          type: string
+        rate:
+          type: string
+        rateCurrency:
+          type: string
+        ratePlanCode:
+          type: string
+        checkedInBy:
+          type: string
+        checkedOutBy:
+          type: string
+        groupName:
+          type: string
+        guest:
+          $ref: '#/components/schemas/SurveyGuestRep'
+        links:
+          type: array
+          items:
+            $ref: '#/components/schemas/Link'
+    SurveyTopicRep:
+      type: object
+      properties:
+        name:
+          type: string
+        questionAnswers:
+          type: array
+          items:
+            $ref: '#/components/schemas/QuestionAnswerRep'
+    TimeValues:
+      type: object
+      properties:
+        time:
+          type: integer
+          format: int64
+        values:
+          $ref: '#/components/schemas/Values'
+    TopicCategoriesSnapshotRep:
+      type: object
+      properties:
+        topicCategories:
+          type: array
+          items:
+            $ref: '#/components/schemas/TopicStatisticsRep'
+        links:
+          type: array
+          items:
+            $ref: '#/components/schemas/Link'
+    TopicStatisticsRep:
+      type: object
+      properties:
+        topicCategoryId:
+          type: integer
+          format: int32
+        text:
+          type: string
+        score:
+          type: integer
+          format: int32
+        scorePercentChange:
+          type: number
+          format: double
+        mentionCount:
+          type: integer
+          format: int32
+        positiveMentionCount:
+          type: integer
+          format: int32
+        neutralMentionCount:
+          type: integer
+          format: int32
+        negativeMentionCount:
+          type: integer
+          format: int32
+        tokenCounts:
+          type: array
+          items:
+            $ref: '#/components/schemas/TopicTokenCountRep'
+    TopicTokenCountRep:
+      type: object
+      properties:
+        text:
+          type: string
+        mentionCount:
+          type: integer
+          format: int32
+    TopicsSnapshotRep:
+      type: object
+      properties:
+        topics:
+          type: array
+          items:
+            $ref: '#/components/schemas/TopicStatisticsRep'
+        links:
+          type: array
+          items:
+            $ref: '#/components/schemas/Link'
+    Values:
+      type: object
+      properties:
+        newReviews:
+          type: number
+          format: double
+        posReviewsPct:
+          type: number
+          format: double
+        averageRating:
+          type: number
+          format: double
+        tripadvisorMarketRankingPctl:
+          type: number
+          format: double
+        tripadvisorMarketRanking:
+          type: integer
+          format: int32
+        tripadvisorMarketSize:
+          type: integer
+          format: int32
+security:
+- porterUsername: []
+  porterTimestamp: []
+  porterKey: []
+  porterEncoded: []

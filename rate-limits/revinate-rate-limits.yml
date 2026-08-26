@@ -1,0 +1,55 @@
+generated: '2026-08-26'
+method: searched
+source: https://porter.revinate.com/documentation
+limit_count: 0
+published_limits: false
+note: >-
+  Revinate documents no rate limits for the Porter API — no requests-per-second or per-day figure,
+  no burst allowance, no rate-limit response headers, and no status code on exhaustion. The
+  documentation page has no rate-limiting section at all. Recorded as limit_count 0 with evidence
+  rather than omitted. Two adjacent constraints ARE documented and are captured below because they
+  bound throughput in practice even though they are not rate limits in the conventional sense.
+limits: []
+response_headers:
+  documented: []
+  observed: []
+  note: >-
+    No X-RateLimit-*, RateLimit-* or Retry-After header is documented, and none was observed on live
+    unauthenticated responses from https://porter.revinate.com/ on 2026-08-26. An agent has no
+    runtime signal telling it how much budget remains or how long to wait, so the only safe strategy
+    is conservative fixed-rate pacing with exponential backoff on any non-2xx.
+status_on_exhaustion: null
+documented_throughput_constraints:
+- id: page-size-maximum
+  constraint: Maximum page size is 1000.
+  default: 10
+  default_exceptions:
+  - resource: reviews
+    default: 5
+  source: https://porter.revinate.com/documentation
+  effect: Caps the number of records retrievable per request and therefore the floor on request count for a full extract.
+- id: per-key-review-limit
+  constraint: >-
+    A per-key review limit exists. The documentation states "If your page and size parameters exceed
+    the review limit, this endpoint returns an error." The limit's value is not published.
+  source: https://porter.revinate.com/documentation
+  applies_to:
+  - listReviews
+  - getReviewsByHotelId
+  - getReviewsForHotelSet
+  effect: >-
+    Bounds how deep an integration can paginate into review history. Because the value is unpublished
+    and per-key, it must be discovered empirically.
+- id: pagination-entitlement
+  constraint: >-
+    Pagination and sorting are conditional on key configuration — "This endpoint supports pagination
+    and sorting if your API key is configured for it."
+  source: https://porter.revinate.com/documentation
+  effect: >-
+    Capability, not just volume, is provisioned per key. Two integrators holding valid keys may see
+    different behaviour from the same endpoint.
+gaps:
+- No published request-rate limit of any kind.
+- No rate-limit response headers, documented or observed.
+- No documented status code for exhaustion.
+- The one documented limit (review limit) has no published value.

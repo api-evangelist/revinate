@@ -1,0 +1,85 @@
+overlay: 1.0.0
+info:
+  title: API Evangelist enhancements — Revinate Porter API
+  version: 1.0.0
+extends: ../openapi/revinate-porter-openapi.yml
+x-generated: '2026-08-26'
+x-method: generated
+x-source: >-
+  Enhancements authored by API Evangelist from Revinate's published documentation at
+  https://porter.revinate.com/documentation. The original Swagger 1.2 contract is preserved
+  unmodified in openapi/_original/. This overlay records what we added and why, so the provider can
+  adopt or reject each change independently.
+actions:
+- target: $.info
+  description: Record the content-licensing split, which is a hard legal constraint absent from the contract.
+  update:
+    x-content-licensing:
+      review-stream:
+        display_permitted: false
+        note: Offline analysis only. Content restrictions prohibit display.
+      widget-review-stream:
+        display_permitted: true
+        excludes:
+        - TripAdvisor
+        - Yelp
+        note: Licensed for display/republishing; partner content is withheld.
+- target: $.info
+  description: Record that the API is entirely read-only, so reversibility and idempotency are not applicable.
+  update:
+    x-write-surface: false
+    x-operations-mutating: 0
+- target: $.components.securitySchemes.porterEncoded
+  description: Document the HMAC construction and its replay window, which the contract cannot express.
+  update:
+    x-signing:
+      algorithm: HMAC-SHA256
+      signed_string: username + timestamp
+      key: API secret
+      encoding: hex
+      replay_window_seconds: 300
+- target: $.paths['/reviews'].get
+  description: Flag the display restriction on the analysis review stream.
+  update:
+    x-display-permitted: false
+    x-licence: Offline analysis only — content may not be displayed.
+- target: $.paths['/widgetreviews'].get
+  description: Flag the display licence and its partner exclusions on the widget stream.
+  update:
+    x-display-permitted: true
+    x-licence-excludes:
+    - TripAdvisor
+    - Yelp
+- target: $.paths['/hotels/{hotelId}/reviews'].get
+  description: Flag the display restriction.
+  update:
+    x-display-permitted: false
+- target: $.paths['/hotels/{hotelId}/widgetreviews'].get
+  description: Flag the display licence.
+  update:
+    x-display-permitted: true
+    x-licence-excludes:
+    - TripAdvisor
+    - Yelp
+- target: $.components.schemas.SurveyGuestRep
+  description: Mark the guest model as carrying personal data so downstream tooling can gate it.
+  update:
+    x-pii: true
+    x-pii-fields:
+    - firstName
+    - lastName
+    - email
+    - phone
+    - address
+    - address2
+    - city
+    - state
+    - country
+    - postalCode
+- target: $.components.schemas.SurveyGuestStayRep
+  description: Mark stay-level identifiers as personal data.
+  update:
+    x-pii: true
+    x-pii-fields:
+    - loyaltyId
+    - confirmationCode

@@ -1,0 +1,137 @@
+generated: '2026-08-26'
+method: derived
+source: >-
+  openapi/revinate-porter-openapi.yml, well-known/revinate-auth-openid-configuration.json, and
+  https://porter.revinate.com/documentation
+note: >-
+  Standards conformance assessed against the Porter API contract and Revinate's live OIDC discovery
+  document. Note the split: the identity surface at auth.revinate.com is genuinely standards-based
+  (OIDC/OAuth 2.0/PKCE/RFC 8414), while the Porter API itself is a bespoke REST surface using a
+  proprietary signing scheme and a proprietary error envelope. Conformance claims below are scoped
+  to whichever surface the evidence supports.
+standards:
+- id: oidc
+  name: OpenID Connect Discovery 1.0
+  conforms: true
+  surface: auth.revinate.com (Revinate application identity)
+  evidence:
+    url: https://auth.revinate.com/.well-known/openid-configuration
+    status: 200
+    detail: >-
+      Serves a complete discovery document with issuer, authorization_endpoint, token_endpoint,
+      userinfo_endpoint and jwks_uri. id_token signing supports RS256 and PS256.
+- id: oauth2
+  name: OAuth 2.0
+  conforms: true
+  surface: auth.revinate.com
+  evidence:
+    url: https://auth.revinate.com/.well-known/oauth-authorization-server
+    status: 200
+    detail: >-
+      Advertises authorization_code, client_credentials, refresh_token, device_code and
+      token-exchange grants with client_secret_basic/post, private_key_jwt and none auth methods.
+- id: rfc8414
+  name: OAuth 2.0 Authorization Server Metadata (RFC 8414)
+  conforms: true
+  surface: auth.revinate.com
+  evidence:
+    url: https://auth.revinate.com/.well-known/oauth-authorization-server
+    status: 200
+- id: rfc7636
+  name: PKCE (RFC 7636)
+  conforms: true
+  surface: auth.revinate.com
+  evidence:
+    detail: code_challenge_methods_supported includes S256 (and plain).
+    source: well-known/revinate-auth-openid-configuration.json
+- id: rfc8628
+  name: OAuth 2.0 Device Authorization Grant (RFC 8628)
+  conforms: true
+  surface: auth.revinate.com
+  evidence:
+    detail: device_authorization_endpoint present; urn:ietf:params:oauth:grant-type:device_code advertised.
+- id: rfc8693
+  name: OAuth 2.0 Token Exchange (RFC 8693)
+  conforms: true
+  surface: auth.revinate.com
+  evidence:
+    detail: urn:ietf:params:oauth:grant-type:token-exchange advertised in grant_types_supported.
+- id: openapi
+  name: OpenAPI 3.x
+  conforms: false
+  surface: porter.revinate.com
+  evidence:
+    detail: >-
+      Revinate publishes Swagger 1.2 (swaggerVersion "1.2") at /api-docs, a format superseded in
+      2014. The OpenAPI 3.1.0 document in this repo is an API Evangelist conversion, not a Revinate
+      publication.
+    source: https://porter.revinate.com/api-docs
+- id: rfc9457
+  name: Problem Details for HTTP APIs (RFC 9457)
+  conforms: false
+  surface: porter.revinate.com
+  evidence:
+    detail: >-
+      Errors return a Spring Boot envelope (timestamp/status/error/message/path) as
+      application/json, not application/problem+json. No type URI, no machine-readable error code.
+    source: errors/revinate-problem-types.yml
+- id: pagination
+  name: Consistent pagination
+  conforms: true
+  surface: porter.revinate.com
+  evidence:
+    detail: >-
+      page/size query parameters applied consistently across collection resources, with a documented
+      page{totalElements,totalPages,size,number} response block. Max size 1000.
+    source: https://porter.revinate.com/documentation
+- id: idempotency
+  name: Idempotency keys
+  conforms: na
+  surface: porter.revinate.com
+  evidence:
+    detail: Not applicable — all 22 operations are GET; there is no write surface requiring idempotency keys.
+- id: hateoas
+  name: HAL / Spring HATEOAS hypermedia
+  conforms: true
+  surface: porter.revinate.com
+  evidence:
+    detail: Responses use Link, Collection and PagedResources wrapper models with navigational links.
+    source: openapi/revinate-porter-openapi.yml
+- id: hmac-signing
+  name: HMAC-SHA256 request signing
+  conforms: true
+  surface: porter.revinate.com
+  standard: false
+  evidence:
+    detail: >-
+      Proprietary four-header scheme. It is NOT an implementation of RFC 9421 HTTP Message
+      Signatures — the signed string is username+timestamp only, covering neither method, path,
+      query nor body, so a captured signature authorises any request within the 5-minute window.
+    source: authentication/revinate-authentication.yml
+domain_standards:
+  market: hospitality / hotel technology
+  declared_in_contract: false
+  note: >-
+    REWARD-ONLY CHECK, HONESTLY UNCLAIMED. The Porter API contract declares no hospitality domain
+    standard — no HTNG (Hospitality Technology Next Generation) message shape, no OTA (OpenTravel
+    Alliance) schema, no GDS/HTNG namespace, no ISO 20022 or EDI message type appears anywhere in
+    the 35 schemas or the 22 operations. The data model is entirely Revinate-proprietary
+    (HotelRep, ReviewRep, TopicStatisticsRep). Revinate is therefore not credited with a domain
+    standard here. Nothing has been invented to fill the slot.
+  adjacent_finding:
+    name: SHIP (Simple Hospitality Interchange Protocol)
+    conforms: false
+    detail: >-
+      Worth recording as context, not as conformance. Revinate authored and open-sourced a
+      hospitality data-exchange protocol called SHIP with bindings in four languages (ship-java on
+      Maven Central 1.6.0, ship-scala_2.11 1.1.1, plus ship-sdk in Ruby and ship-js on GitHub). SHIP
+      is a Revinate-originated protocol rather than an industry standard, all bindings were last
+      released in 2016-2018, and crucially the Porter API does NOT speak it — no SHIP message type
+      appears in the Porter contract. It is a separate, dormant effort.
+    evidence:
+    - https://github.com/revinate/ship-sdk
+    - https://search.maven.org/solrsearch/select?q=g:com.revinate
+compliance_program:
+  published: true
+  trust_center: https://trust.revinate.com/
+  detail: security/revinate-trust-center.yml

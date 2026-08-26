@@ -1,0 +1,247 @@
+generated: '2026-08-26'
+method: derived
+source: openapi/revinate-porter-openapi.yml
+origin_contract: https://porter.revinate.com/api-docs
+api: Revinate Porter API
+note: >-
+  Entity-relationship graph derived from the 35 schemas in the converted OpenAPI, which in turn come
+  from the six Swagger 1.2 resource declarations Revinate publishes. Relationships are read from
+  $ref links between models and from id-reference fields. Revinate publishes no object reference
+  page, so field semantics below come from the contract's own property names and descriptions.
+identifiers:
+  style: opaque path identifiers
+  note: >-
+    Ids appear only as path parameters (hotelId, hotelSetId, reviewId, languageId, reviewSiteId) and
+    are not exposed as properties on the representation models — the models are HAL-style and carry
+    a `links` array instead. An agent must therefore harvest ids from collection `links`, not from a
+    top-level id field. Human-facing `slug` fields exist on Hotel, ReviewSite and Language and are
+    the stable, readable handles.
+  path_parameters:
+  - hotelId
+  - hotelSetId
+  - reviewId
+  - languageId
+  - reviewSiteId
+  slug_bearing_entities:
+  - HotelRep
+  - ReviewSiteRep
+  - LanguageRep
+entities:
+- name: HotelSetRep
+  label: Hotel Set
+  description: A grouping of hotels, typically a corporate portfolio or brand collection.
+  key_fields: [name, corporateHotel, type]
+  root_operations: [listHotelSets, getHotelSet]
+- name: HotelRep
+  label: Hotel
+  description: A single property, with address, branding and external identifiers.
+  key_fields: [name, slug, logo, url, address1, city, state, postalCode, country, tripAdvisorId, accountType]
+  external_identifiers: [tripAdvisorId]
+  root_operations: [listHotels, getHotel]
+- name: ReviewRep
+  label: Review
+  description: A single guest review or survey response, aggregated from a review site or Revinate's own survey.
+  key_fields: [title, body, author, authorLocation, dateReview, dateCollected, updatedAt, rating, nps, tripType, crawledUrl, subratings]
+  root_operations: [listReviews, getReview, listWidgetReviews]
+- name: ReviewSiteRep
+  label: Review Site
+  description: One of the 100-plus external sources Revinate aggregates reviews from.
+  key_fields: [name, mainUrl, slug]
+  root_operations: [listReviewSites, getReviewSite]
+- name: LanguageRep
+  label: Language
+  description: A language a review may be written in; slug values feed the languageSlug filter.
+  key_fields: [name, englishName, slug]
+  root_operations: [listLanguages, getLanguage]
+- name: ResponseRep
+  label: Management Response
+  description: The hotel's published reply to a review.
+  key_fields: [body, author, date]
+  root_operations: []
+- name: SurveyGuestStayRep
+  label: Guest Stay
+  description: Reservation and stay context attached to a survey-sourced review.
+  key_fields: [checkinDate, checkoutDate, loyaltyId, confirmationCode, bookingChannel, roomType, roomNumber, rate, rateCurrency, ratePlanCode, groupName]
+  root_operations: []
+- name: SurveyGuestRep
+  label: Guest
+  description: The identified guest behind a survey response.
+  key_fields: [title, firstName, lastName, phone, email, address, city, state, country, postalCode]
+  pii: true
+  root_operations: []
+- name: SurveyTopicRep
+  label: Survey Topic
+  description: A themed block of survey questions and the guest's answers.
+  key_fields: [name]
+  root_operations: []
+- name: QuestionRep
+  label: Survey Question
+  description: A survey question definition, including its answer type and option configuration.
+  key_fields: [name, type]
+  root_operations: []
+- name: QuestionAnswerRep
+  label: Survey Answer
+  description: A guest's answer, polymorphic across yes/no, text, rating, range and multiple-choice.
+  key_fields: [yesNoAnswer, textAnswer, ratingAnswer, rangeAnswer, multipleChoiceAnswers, notApplicableAnswer]
+  root_operations: []
+- name: ReviewsSnapshotRep
+  label: Reviews Snapshot
+  description: Aggregate review metrics for a hotel, broken out by review site and over time.
+  key_fields: [aggregateValues, valuesByReviewSite, valuesByTime]
+  root_operations: [getReviewsSnapshotByHotelId]
+- name: TopicCategoriesSnapshotRep
+  label: Sentiment Category Snapshot
+  description: Category-level sentiment analysis for a hotel.
+  key_fields: [topicCategories]
+  root_operations: [getSentimentSnapshotByHotelId]
+- name: TopicsSnapshotRep
+  label: Sentiment Topic Snapshot
+  description: Child-topic-level sentiment analysis for a hotel.
+  key_fields: [topics]
+  root_operations: [getSentimentBreakdownByHotelIdAndTopicCategoryId]
+- name: TopicStatisticsRep
+  label: Topic Statistics
+  description: Sentiment score and mention counts for one operational topic.
+  key_fields: [topicCategoryId, text, score, scorePercentChange, mentionCount, positiveMentionCount, neutralMentionCount, negativeMentionCount]
+  root_operations: []
+- name: SurveyEmailStatsRep
+  label: Survey Email Statistics
+  description: Email delivery and engagement counters for a hotel's guest surveys.
+  key_fields: [requests, sent, delivered, bounces, bounceDrops, invalidEmails, spamReports, unsubscribes, uniqueOpens, uniqueClicks, uniqueViews]
+  root_operations: [getSurveyEmailStatsByHotelId]
+relationships:
+- from: HotelSetRep
+  to: HotelRep
+  type: has_many
+  via: /hotelsets/{hotelSetId}/hotels
+  operation: getHotelsForHotelSet
+- from: HotelSetRep
+  to: HotelRep
+  type: has_one
+  via: corporateHotel
+  note: The corporate/parent hotel that owns the set.
+- from: HotelSetRep
+  to: ReviewRep
+  type: has_many
+  via: /hotelsets/{hotelSetId}/reviews
+  operation: getReviewsForHotelSet
+- from: HotelRep
+  to: HotelSetRep
+  type: has_many
+  via: /hotels/{hotelId}/hotelsets
+  operation: getHotelSetsForCorporateHotel
+- from: HotelRep
+  to: ReviewRep
+  type: has_many
+  via: /hotels/{hotelId}/reviews
+  operation: getReviewsByHotelId
+- from: HotelRep
+  to: HotelRep
+  type: has_many
+  via: /hotels/{hotelId}/competitorhotels
+  operation: getCompetitorHotelsByHotelId
+  note: Self-referential — a hotel's designated competitive set.
+- from: HotelRep
+  to: ReviewRep
+  type: has_many
+  via: /hotels/{hotelId}/competitorreviews
+  operation: getCompetitorReviewsByHotelId
+- from: HotelRep
+  to: ReviewsSnapshotRep
+  type: has_one
+  via: /hotels/{hotelId}/reviewssnapshot
+  operation: getReviewsSnapshotByHotelId
+- from: HotelRep
+  to: SurveyEmailStatsRep
+  type: has_one
+  via: /hotels/{hotelId}/surveyemailstats
+  operation: getSurveyEmailStatsByHotelId
+- from: HotelRep
+  to: TopicCategoriesSnapshotRep
+  type: has_one
+  via: /hotels/{hotelId}/topiccategoriessnapshot
+  operation: getSentimentSnapshotByHotelId
+- from: HotelRep
+  to: TopicsSnapshotRep
+  type: has_one
+  via: /hotels/{hotelId}/topicssnapshot
+  operation: getSentimentBreakdownByHotelIdAndTopicCategoryId
+- from: ReviewRep
+  to: ReviewSiteRep
+  type: has_one
+  via: reviewSite
+- from: ReviewRep
+  to: LanguageRep
+  type: has_one
+  via: language
+- from: ReviewRep
+  to: ResponseRep
+  type: has_one
+  via: response
+- from: ReviewRep
+  to: SurveyGuestStayRep
+  type: has_one
+  via: guestStay
+- from: ReviewRep
+  to: SurveyTopicRep
+  type: has_many
+  via: surveyTopics
+- from: SurveyGuestStayRep
+  to: SurveyGuestRep
+  type: has_one
+  via: guest
+- from: SurveyTopicRep
+  to: QuestionAnswerRep
+  type: has_many
+  via: questionAnswers
+- from: QuestionAnswerRep
+  to: QuestionRep
+  type: has_one
+  via: question
+- from: TopicCategoriesSnapshotRep
+  to: TopicStatisticsRep
+  type: has_many
+  via: topicCategories
+- from: TopicsSnapshotRep
+  to: TopicStatisticsRep
+  type: has_many
+  via: topics
+- from: TopicStatisticsRep
+  to: TopicTokenCountRep
+  type: has_many
+  via: tokenCounts
+pii_surface:
+  present: true
+  entities:
+  - SurveyGuestRep
+  - SurveyGuestStayRep
+  fields:
+  - firstName
+  - lastName
+  - email
+  - phone
+  - address
+  - address2
+  - city
+  - state
+  - country
+  - postalCode
+  - loyaltyId
+  - confirmationCode
+  note: >-
+    Survey-sourced reviews carry identified guest data — full name, email, phone, postal address,
+    loyalty id and booking confirmation code. Any integration reading /reviews on a survey-enabled
+    property is handling personal data and falls in scope for GDPR/CCPA obligations. This is a
+    schema-shape observation from the public contract; no personal data was retrieved.
+wrapper_models:
+  note: >-
+    Collections are wrapped in Spring HATEOAS PagedResources/Collection envelopes with a Link model,
+    so the payload shape is {_embedded-style collection, links[], page{}} rather than a bare array.
+  models:
+  - PagedResources_HotelRep
+  - PagedResources_HotelSetRep
+  - PagedResources_ReviewRep
+  - PagedResources_ReviewSiteRep
+  - PagedResources_LanguageRep
+  - PageMetadata
+  - Link

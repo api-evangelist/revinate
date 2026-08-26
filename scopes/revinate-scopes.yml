@@ -1,0 +1,77 @@
+generated: '2026-08-26'
+method: probed
+source: https://auth.revinate.com/.well-known/openid-configuration
+docs: https://porter.revinate.com/documentation
+applies_to: Revinate application platform (home.revinate.com) — NOT the Porter API
+note: >-
+  These scopes are read verbatim from the scopes_supported array of Revinate's live OpenID Connect
+  discovery document at auth.revinate.com, an Auth0-hosted issuer. IMPORTANT BOUNDARY: this issuer
+  authenticates users into the Revinate web application; the public Porter REST API does not use
+  OAuth at all and has no scope surface — it authenticates with four HMAC-SHA256 headers and access
+  is provisioned per API key by a Revinate account manager. The scope list below is therefore the
+  identity surface, not an API authorization surface. Every scope present is a standard OIDC scope
+  or a standard OIDC claim-scope; Revinate declares no custom/product scopes.
+issuer: https://auth.revinate.com/
+authorization_endpoint: https://auth.revinate.com/authorize
+token_endpoint: https://auth.revinate.com/oauth/token
+scope_count: 14
+scopes:
+- name: openid
+  description: Standard OIDC scope requesting an ID token.
+  standard: true
+- name: profile
+  description: Requests the default profile claims (name, family_name, given_name, nickname, picture, etc.).
+  standard: true
+- name: offline_access
+  description: Requests a refresh token for long-lived access.
+  standard: true
+- name: email
+  description: Requests the email claim.
+  standard: true
+- name: email_verified
+  description: Requests the email_verified claim.
+  standard: true
+- name: name
+  description: Requests the full name claim.
+  standard: true
+- name: given_name
+  description: Requests the given name claim.
+  standard: true
+- name: family_name
+  description: Requests the family name claim.
+  standard: true
+- name: nickname
+  description: Requests the nickname claim.
+  standard: true
+- name: picture
+  description: Requests the profile picture claim.
+  standard: true
+- name: phone
+  description: Requests the phone_number claim.
+  standard: true
+- name: address
+  description: Requests the address claim.
+  standard: true
+- name: created_at
+  description: Requests the account created_at claim.
+  standard: true
+- name: identities
+  description: Auth0 identities claim — linked identity-provider accounts for the user.
+  standard: false
+grant_types_supported:
+- authorization_code
+- client_credentials
+- refresh_token
+- implicit
+- password
+- urn:ietf:params:oauth:grant-type:device_code
+- urn:ietf:params:oauth:grant-type:token-exchange
+- urn:ietf:params:oauth:grant-type:jwt-bearer
+pkce_methods_supported:
+- S256
+- plain
+token_endpoint_auth_methods_supported:
+- client_secret_basic
+- client_secret_post
+- private_key_jwt
+- none

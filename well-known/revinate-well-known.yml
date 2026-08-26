@@ -1,0 +1,57 @@
+generated: '2026-08-26'
+method: probed
+source: live HTTP probes of every Revinate host on 2026-08-26
+note: >-
+  Revinate serves no /.well-known/ documents from its marketing host (www.revinate.com) or from the
+  Porter API host (porter.revinate.com, which returns 401 for every path including /.well-known/*).
+  It DOES serve a complete, anonymous OpenID Connect + OAuth 2.0 Authorization Server Metadata pair
+  from auth.revinate.com, the Auth0-backed issuer behind the Revinate application login at
+  home.revinate.com. Note the scope boundary: that issuer secures the Revinate web application, NOT
+  the Porter API, which uses its own four-header HMAC-SHA256 scheme and no OAuth. The two 404s on
+  www.revinate.com below return the WordPress themed 404 page, not a document.
+hosts:
+- host: auth.revinate.com
+  documents:
+  - path: /.well-known/openid-configuration
+    status: 200
+    file: revinate-auth-openid-configuration.json
+  - path: /.well-known/oauth-authorization-server
+    status: 200
+    file: revinate-auth-oauth-authorization-server.json
+  - path: /.well-known/security.txt
+    status: 404
+    file: null
+  - path: /.well-known/agent-card.json
+    status: 404
+    file: null
+- host: www.revinate.com
+  documents:
+  - path: /.well-known/security.txt
+    status: 404
+    file: null
+  - path: /.well-known/openid-configuration
+    status: 404
+    file: null
+  - path: /.well-known/oauth-authorization-server
+    status: 404
+    file: null
+  - path: /.well-known/api-catalog
+    status: 404
+    file: null
+  - path: /.well-known/ai-plugin.json
+    status: 404
+    file: null
+  - path: /.well-known/agent-card.json
+    status: 404
+    file: null
+  - path: /.well-known/agent.json
+    status: 404
+    file: null
+- host: porter.revinate.com
+  documents:
+  - path: /.well-known/security.txt
+    status: 401
+    file: null
+  - path: /.well-known/agent-card.json
+    status: 401
+    file: null

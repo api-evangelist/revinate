@@ -1,0 +1,26 @@
+generated: '2026-08-26'
+method: searched
+source: https://www.revinate.com/pricing/
+plan_count: 0
+public_pricing: false
+self_service_signup: false
+note: >-
+  Revinate publishes no pricing. https://www.revinate.com/pricing/ returns HTTP 200 but redirects to
+  https://www.revinate.com/demo/, a "Request a demo" lead-capture form — there is no tier table, no
+  price, no quota and no overage anywhere on the marketing site. The Porter API is not sold or
+  metered separately: its documentation directs integrators to "contact your sales representative or
+  account manager for your API key and API secret and appropriate access permissions", so API access
+  is an entitlement attached to an existing Revinate contract rather than a purchasable plan.
+  Recorded as plan_count 0 with evidence rather than omitted.
+plans: []
+evidence:
+- url: https://www.revinate.com/pricing/
+  status: 200
+  note: Redirects to https://www.revinate.com/demo/ — a demo-request form, not a pricing page.
+- url: https://www.revinate.com/demo/
+  status: 200
+  note: Lead-capture form. No prices published.
+- url: https://porter.revinate.com/documentation
+  status: 200
+  note: States API credentials are issued by a sales representative or account manager.
+sales_motion: enterprise contact-sales only

@@ -1,0 +1,38 @@
+generated: '2026-08-26'
+method: probed
+source: https://trust.revinate.com/
+present: true
+vendor: Vanta
+note: >-
+  Revinate operates a hosted Trust Center at trust.revinate.com, linked directly from the
+  www.revinate.com homepage footer and returning HTTP 200. It is Revinate's authoritative compliance
+  surface — the marketing site's /privacy-policy/ URL redirects into it as a resource
+  (trust.revinate.com/resources?...&name=revinate-solutions-privacy-policy), which confirms the
+  tenant is genuinely Revinate's and actively used.
+  HONEST LIMIT: the certification list could NOT be enumerated. The Trust Center is a fully
+  client-side-rendered Vanta single-page application whose catch-all answers HTTP 200 with the same
+  HTML shell for every path, including /api/trust-center and /resources. No certification name is
+  present anywhere in the served HTML. Certifications are therefore recorded as unverified rather
+  than guessed — no SOC 2, ISO 27001 or PCI claim has been asserted on Revinate's behalf.
+certifications: []
+certifications_verified: false
+certifications_unreadable_reason: js-rendered
+evidence:
+- url: https://trust.revinate.com/
+  status: 200
+  note: Title "Revinate Trust Center". Vanta-hosted (assets.vanta.com signature manifest in the document head).
+- url: https://www.revinate.com/privacy-policy/
+  status: 200
+  note: 302s into trust.revinate.com/resources with a real Revinate resource identifier.
+- url: https://trust.revinate.com/api/trust-center
+  status: 200
+  note: Returns the SPA HTML shell, not JSON. No machine-readable certification data available anonymously.
+documents:
+- name: Revinate Solutions Privacy Policy
+  hosted_on: trust.revinate.com
+  url: https://www.revinate.com/privacy-policy/
+recommendation: >-
+  For the provider — a Vanta Trust Center can be configured to expose a public, crawlable summary of
+  active certifications. Enabling it, or listing certification names in server-rendered HTML, would
+  make Revinate's compliance posture machine-readable to procurement tooling and AI agents that
+  cannot execute JavaScript.

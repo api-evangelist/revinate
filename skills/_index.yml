@@ -1,0 +1,44 @@
+generated: '2026-08-26'
+method: generated
+source: >-
+  Authored by API Evangelist from openapi/revinate-porter-openapi.yml (converted from Revinate's
+  published Swagger 1.2 at https://porter.revinate.com/api-docs) plus
+  https://porter.revinate.com/documentation. Revinate publishes no skills, AGENTS.md or agent
+  instructions of its own — searched the docs host, marketing site and GitHub org on 2026-08-26.
+api: Revinate Porter API
+note: >-
+  Every operationId referenced in these skills was verified present in the converted OpenAPI. No
+  operation, parameter or endpoint has been invented. All operations are read-only GETs.
+skills:
+- name: revinate-reputation-snapshot
+  file: revinate-reputation-snapshot.md
+  description: Pull a hotel's review volume, average rating and TripAdvisor rank, with sentiment breakdown.
+  operations:
+  - listHotels
+  - getHotel
+  - getReviewsSnapshotByHotelId
+  - getSentimentSnapshotByHotelId
+  - getSentimentBreakdownByHotelIdAndTopicCategoryId
+- name: revinate-review-extract
+  file: revinate-review-extract.md
+  description: Paginate a hotel's full review history for offline analysis, with filters and licence guardrails.
+  operations:
+  - listHotels
+  - listLanguages
+  - getReviewsByHotelId
+  - listReviews
+  - getReview
+- name: revinate-display-widget-feed
+  file: revinate-display-widget-feed.md
+  description: Fetch reviews that are licensed for public display on a website or widget.
+  operations:
+  - getWidgetReviewsByHotelId
+  - listWidgetReviews
+- name: revinate-competitive-benchmark
+  file: revinate-competitive-benchmark.md
+  description: Compare a hotel against its competitive set using competitor hotels and reviews.
+  operations:
+  - getHotel
+  - getCompetitorHotelsByHotelId
+  - getCompetitorReviewsByHotelId
+  - getReviewsSnapshotByHotelId

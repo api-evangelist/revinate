@@ -1,18 +1,74 @@
 aid: revinate
 name: Revinate
-description: 'Revinate is a company surfaced via the API Evangelist harvest backlog (source: secondary-market)
-  and added to the network as a stub for full-pipeline profiling.'
+description: 'Revinate is a hospitality technology company providing a Guest Data Platform
+  and CRM for hotels — unifying guest profiles from property-management systems, then driving
+  direct revenue through email marketing, a voice/call-center product, a virtual concierge, and
+  reputation and guest-feedback management. Revinate states it powers 950 million-plus guest
+  profiles and $17.2 billion in direct revenue for over 12,500 hotels worldwide. Its public
+  developer surface is the Porter API — a read-only REST API for structured review data covering
+  100-plus review sites, exposing hotels, hotel sets, reviews, competitor reviews, review-volume
+  and rating snapshots, survey email statistics, and hospitality-specific sentiment analysis
+  broken out by topic category.'
 url: https://raw.githubusercontent.com/api-evangelist/revinate/refs/heads/main/apis.yml
+image: https://www.revinate.com/wp-content/uploads/2022/09/revinate-logo-400px.png
 x-type: company
 x-source: harvest:secondary-market
-x-tier: stub
-x-tier-reason: harvest
 specificationVersion: '0.20'
 created: '2026-08-26'
 modified: '2026-08-26'
 tags:
-- Company
-apis: []
+- Hospitality
+- Hotels
+- Reviews
+- Reputation Management
+- Guest Data Platform
+- CRM
+- Sentiment Analysis
+- Travel
+- Marketing
+- Customer Feedback
+apis:
+- aid: revinate:porter
+  name: Revinate Porter API
+  description: 'The Porter API is Revinate''s structured review-data REST API. It provides
+    read access to hotel reviews aggregated across more than 100 review sites, plus key metrics
+    (review counts, average ratings, TripAdvisor rank) and hospitality-tuned sentiment analysis.
+    Two review streams exist and are not interchangeable: the Review Stream is licensed for
+    offline analysis only and may not be used for display, while the Widget Review Stream is
+    licensed for display and republishing but excludes TripAdvisor and Yelp content. All 22
+    operations are GET; the API is read-only. Authentication is a four-header HMAC-SHA256
+    scheme keyed on an API secret issued by Revinate.'
+  humanURL: https://porter.revinate.com/documentation
+  baseURL: https://porter.revinate.com
+  tags:
+  - Reviews
+  - Hotels
+  - Sentiment Analysis
+  - Reputation Management
+  - Hospitality
+  properties:
+  - type: OpenAPI
+    url: openapi/revinate-porter-openapi.yml
+  - type: Swagger
+    url: openapi/_original/revinate-porter-api-docs-resource-listing.json
+  - type: Documentation
+    url: https://porter.revinate.com/documentation
+  - type: APIReference
+    url: https://porter.revinate.com/documentation#api-docs
+  - type: Authentication
+    url: authentication/revinate-authentication.yml
+  - type: Conventions
+    url: conventions/revinate-conventions.yml
+  - type: ErrorCatalog
+    url: errors/revinate-problem-types.yml
+  - type: DataModel
+    url: data-model/revinate-data-model.yml
+  - type: RateLimits
+    url: rate-limits/revinate-rate-limits.yml
+  - type: Overlay
+    url: overlays/revinate-porter-overlay.yaml
+  - type: AgentSkill
+    url: skills/_index.yml
 maintainers:
 - FN: Kin Lane
   email: kin@apievangelist.com
@@ -20,4 +76,53 @@ maintainers:
   email: info@apis.io
 common:
 - type: Website
-  url: https://www.nasdaqprivatemarket.com/
+  url: https://www.revinate.com/
+- type: DeveloperPortal
+  url: https://porter.revinate.com/documentation
+- type: Documentation
+  url: https://porter.revinate.com/documentation
+- type: APIReference
+  url: https://porter.revinate.com/documentation#api-docs
+- type: GettingStarted
+  url: https://porter.revinate.com/documentation#introduction
+- type: Support
+  url: https://www.revinate.com/support/
+- type: Blog
+  url: https://www.revinate.com/blog/
+- type: GitHubOrganization
+  url: https://github.com/revinate
+- type: Login
+  url: https://www.revinate.com/login/
+- type: TermsOfService
+  url: https://www.revinate.com/website-terms-of-use/
+- type: PrivacyPolicy
+  url: https://www.revinate.com/website-privacy-policy/
+- type: TrustCenter
+  url: https://trust.revinate.com/
+- type: Compliance
+  url: security/revinate-trust-center.yml
+- type: LLMsTxt
+  url: llms/revinate-llms.txt
+- type: WellKnown
+  url: well-known/revinate-well-known.yml
+- type: OAuthScopes
+  url: scopes/revinate-scopes.yml
+- type: Authentication
+  url: authentication/revinate-authentication.yml
+- type: Packages
+  url: packages/revinate-packages.yml
+- type: Conformance
+  url: conformance/revinate-conformance.yml
+- type: Lifecycle
+  url: lifecycle/revinate-lifecycle.yml
+- type: DomainSecurity
+  url: security/revinate-domain-security.yml
+- type: Plans
+  url: plans/revinate-plans-pricing.yml
+- type: RateLimits
+  url: rate-limits/revinate-rate-limits.yml
+x-enrichment:
+  date: '2026-08-26'
+  status: enriched
+  artifacts_added: 21
+  pass: local-v1

@@ -1,0 +1,116 @@
+generated: '2026-08-26'
+method: derived
+source: openapi/revinate-porter-openapi.yml
+status: candidate
+note: >-
+  Revinate ships NO MCP server. Searched the developer documentation, the marketing site, the
+  revinate GitHub organization (73 public repos), npm and the public MCP registries on 2026-08-26 —
+  nothing. No hosted endpoint was probed because none is published, and no endpoint URL has been
+  invented here. The tool list below is a DERIVED CANDIDATE: a faithful 1:1 projection of the 22
+  published Porter API operations into MCP tool shape, offered as a design for a server that does
+  not yet exist. Every tool maps to a real operationId in the converted OpenAPI and inherits that
+  operation's parameters as its input schema. Nothing here is callable today.
+deployment:
+  mode: none
+  endpoint: null
+  install: null
+  package: null
+  auth: api-key
+  verified: derived
+  pointer_emitted: false
+  pointer_note: >-
+    No `MCPServer` pointer is wired in apis.yml on purpose. deployment.mode is `none` — this file is
+    a derived design for a server that does not exist. Emitting the pointer would credit Revinate
+    with a live agent surface it does not serve. Wire it only if Revinate ships a real endpoint.
+  auth_note: >-
+    Any future server would front the Porter API's four-header HMAC-SHA256 scheme. Because the
+    signature is computed from username + timestamp with a 5-minute replay window, the server would
+    have to hold the API secret and sign each outbound call itself — it could not simply forward a
+    static bearer token from the agent.
+server:
+  name: revinate-porter
+  published: false
+  transport: null
+  base_api: https://porter.revinate.com
+tool_count: 22
+read_only: true
+tools:
+- name: list_hotels
+  rest: listHotels
+  description: List hotels the API key has access to.
+- name: get_hotel
+  rest: getHotel
+  description: Get a single hotel by id.
+- name: list_hotel_sets
+  rest: listHotelSets
+  description: List hotel sets (corporate or brand groupings of properties).
+- name: get_hotel_set
+  rest: getHotelSet
+  description: Get a single hotel set by id.
+- name: get_hotels_for_hotel_set
+  rest: getHotelsForHotelSet
+  description: List the hotels belonging to a hotel set.
+- name: get_hotel_sets_for_hotel
+  rest: getHotelSetsForCorporateHotel
+  description: List the hotel sets a corporate hotel owns.
+- name: list_reviews
+  rest: listReviews
+  description: >-
+    List reviews across accessible hotels. Filterable by ratings, feedback sentiment, response
+    status, language and date range. ANALYSIS ONLY — this content may not be displayed.
+- name: get_review
+  rest: getReview
+  description: Get a single review by id. ANALYSIS ONLY — may not be displayed.
+- name: get_reviews_for_hotel
+  rest: getReviewsByHotelId
+  description: List reviews for one hotel. ANALYSIS ONLY — may not be displayed.
+- name: get_reviews_for_hotel_set
+  rest: getReviewsForHotelSet
+  description: List reviews across every hotel in a hotel set. ANALYSIS ONLY — may not be displayed.
+- name: get_competitor_hotels
+  rest: getCompetitorHotelsByHotelId
+  description: List a hotel's designated competitive set.
+- name: get_competitor_reviews
+  rest: getCompetitorReviewsByHotelId
+  description: List reviews for a hotel's competitors. ANALYSIS ONLY — may not be displayed.
+- name: list_widget_reviews
+  rest: listWidgetReviews
+  description: >-
+    List reviews licensed for display and republishing. Excludes TripAdvisor and Yelp content.
+    Use this — never list_reviews — when the output will be shown to an end user.
+- name: get_widget_reviews_for_hotel
+  rest: getWidgetReviewsByHotelId
+  description: List display-licensed reviews for one hotel. Excludes TripAdvisor and Yelp.
+- name: get_reviews_snapshot
+  rest: getReviewsSnapshotByHotelId
+  description: Get aggregate review metrics for a hotel — volume, average rating, TripAdvisor rank, broken out by review site and over time.
+- name: get_sentiment_snapshot
+  rest: getSentimentSnapshotByHotelId
+  description: Get category-level sentiment analysis for a hotel.
+- name: get_sentiment_breakdown
+  rest: getSentimentBreakdownByHotelIdAndTopicCategoryId
+  description: Get child-topic-level sentiment analysis for a hotel within a topic category.
+- name: get_survey_email_stats
+  rest: getSurveyEmailStatsByHotelId
+  description: Get guest-survey email delivery and engagement counters for a hotel.
+- name: list_review_sites
+  rest: listReviewSites
+  description: List the review sites Revinate aggregates from.
+- name: get_review_site
+  rest: getReviewSite
+  description: Get a single review site by id.
+- name: list_languages
+  rest: listLanguages
+  description: List languages; slugs feed the languageSlug review filter.
+- name: get_language
+  rest: getLanguage
+  description: Get a single language by id.
+agent_guidance:
+  - >-
+    The display licence is the single most important rule on this API. Reviews from list_reviews and
+    its siblings may be used for offline analysis ONLY and must never be surfaced to an end user.
+    Anything shown to a person must come from list_widget_reviews or get_widget_reviews_for_hotel.
+  - All 22 tools are read-only. No tool in this surface can mutate Revinate state.
+  - >-
+    Survey-sourced reviews embed identified guest PII (name, email, phone, postal address, loyalty id,
+    confirmation code). Treat review payloads as personal data.

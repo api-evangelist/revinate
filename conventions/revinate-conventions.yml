@@ -1,0 +1,178 @@
+generated: '2026-08-26'
+method: searched
+source: https://porter.revinate.com/documentation
+derived_from: openapi/revinate-porter-openapi.yml
+api: Revinate Porter API
+base_url: https://porter.revinate.com
+note: >-
+  Cross-cutting runtime semantics for the Porter API, read from Revinate's published documentation
+  and cross-checked against the Swagger 1.2 contract at /api-docs. The API is entirely read-only —
+  all 22 published operations are GET — which is what makes idempotency, dry-run and reversibility
+  non-applicable rather than absent.
+authentication:
+  style: four-header HMAC-SHA256 request signing
+  headers:
+  - X-Revinate-Porter-Username
+  - X-Revinate-Porter-Timestamp
+  - X-Revinate-Porter-Key
+  - X-Revinate-Porter-Encoded
+  detail: authentication/revinate-authentication.yml
+  clock_skew_tolerance_seconds: 300
+idempotency:
+  supported: na
+  header: null
+  scope: null
+  retention: null
+  note: >-
+    Not applicable. Every published Porter operation is a GET and is therefore inherently idempotent
+    and safe. There is no write surface, so there is no idempotency-key mechanism to document and
+    none is needed. Revinate publishes no Idempotency-Key header.
+pagination:
+  style: page-number
+  supported: partial
+  note: Supported on collection resources; singular resources (/hotels/{hotelId}) do not paginate.
+  request_params:
+  - name: page
+    description: Zero-based page number of the result set to return.
+  - name: size
+    description: Number of elements per page.
+    default: 10
+    default_exceptions:
+    - resource: reviews
+      default: 5
+    maximum: 1000
+  response_field: page
+  response_shape:
+    page:
+      totalElements: Total number of objects across the whole result set.
+      totalPages: Number of pages available given the requested size.
+      size: Page size in effect.
+      number: Page number of the current page.
+  over_range_behavior: >-
+    Requesting a page/size combination beyond the actual result set does NOT return an error; the
+    paginated result set comes back empty. An agent must therefore terminate on an empty page rather
+    than waiting for an error status.
+sorting:
+  supported: partial
+  param: sort
+  format: '{field}(,ASC|DESC)'
+  default_direction: ASC
+  example: '?sort=name,DESC'
+filtering:
+  date_range:
+    param: date
+    format: '{startDate}..{endDate}'
+    value_type: epoch seconds
+    example: '1389402398..1420938399'
+  review_filters:
+  - param: ratings
+    description: Comma-separated list of ratings 1-5 to filter by, e.g. ratings=4,5.
+  - param: feedback
+    description: Sentiment filter. Valid values are positive, neutral, negative.
+  - param: response
+    description: Response status filter. Valid values are none, posted.
+  - param: languageSlug
+    description: Language slug filter; valid values come from the /languages endpoint.
+field_expansion:
+  supported: false
+  note: No expand/fields/sparse-fieldset parameter is documented. Responses are fixed shape.
+metadata:
+  supported: false
+  note: No customer-defined metadata surface; the API is read-only over Revinate-owned review data.
+request_tracing:
+  request_id_header: null
+  note: >-
+    No request-id or correlation-id header is documented, and none was observed on live 401
+    responses. An agent has no provider-issued identifier to quote in a support ticket.
+hypermedia:
+  style: HAL-like
+  note: >-
+    Response models carry a Link model and Collection/PagedResources wrappers (Spring HATEOAS
+    shape), so collection responses include navigational links alongside the page block.
+versioning:
+  scheme: none-in-path
+  current_version: '1.0'
+  version_source: apiVersion field of the Swagger 1.2 resource listing at /api-docs
+  in_url: false
+  in_header: false
+  note: >-
+    No version segment appears in the URL and no version header is documented. The contract declares
+    apiVersion 1.0. Revinate publishes no versioning or deprecation policy, so a consumer has no
+    stated notice period for a breaking change.
+error_envelope:
+  format: custom-json
+  rfc9457: false
+  content_type: application/json;charset=UTF-8
+  shape:
+    timestamp: Epoch milliseconds when the error was generated.
+    status: HTTP status code, duplicated in the body.
+    error: HTTP reason phrase, e.g. Unauthorized.
+    message: Human-readable message.
+    path: The request path that produced the error.
+  note: >-
+    Spring Boot default error envelope, observed live on 2026-08-26. It is NOT documented and NOT
+    declared in the published Swagger 1.2 contract; there is no machine-readable error code field,
+    only an HTTP status and prose. See errors/revinate-problem-types.yml.
+  detail: errors/revinate-problem-types.yml
+rate_limit_signaling:
+  headers_documented: []
+  status_on_exhaustion: null
+  note: >-
+    Revinate documents no rate limits and no rate-limit response headers. The documentation does
+    state that a review-limit exists — "If your page and size parameters exceed the review limit,
+    this endpoint returns an error" — and that pagination and sorting are only available "if your
+    API key is configured for it", implying per-key entitlement rather than a published global
+    limit. See rate-limits/revinate-rate-limits.yml.
+  detail: rate-limits/revinate-rate-limits.yml
+dry_run_mode:
+  supported: na
+  note: Not applicable — read-only API, no operation mutates state, so there is nothing to rehearse.
+reversibility:
+  grade: na
+  applicable: false
+  write_surface: false
+  reversal_operations: []
+  note: >-
+    Not applicable. The Porter API publishes 22 operations and every one of them is a GET. There is
+    no create, update, delete, cancel, refund, void or restore operation anywhere in the contract,
+    so there is no action an agent could take that would need to be taken back. Reversibility is
+    honestly `na` here rather than missing — recorded so it leaves the denominator instead of
+    scoring zero against a provider that has no write surface to reverse.
+  pointer_note: >-
+    No `Idempotency` pointer is wired in apis.yml on purpose. Revinate publishes no idempotency-key
+    mechanism; idempotency here is `na` because the API is read-only, and asserting the pointer
+    would claim a capability the provider does not ship.
+  evidence:
+    source: openapi/revinate-porter-openapi.yml
+    operations_total: 22
+    operations_mutating: 0
+content_licensing:
+  note: >-
+    A hard, non-obvious runtime constraint an agent MUST respect. The two review streams carry
+    different content licences and are not interchangeable.
+  streams:
+  - stream: Review Stream
+    operations:
+    - listReviews
+    - getReview
+    - getReviewsByHotelId
+    - getReviewsForHotelSet
+    - getCompetitorReviewsByHotelId
+    permitted_use: offline analysis only
+    display_permitted: false
+    constraint: Content provided by this API cannot be used for display purposes due to content restrictions.
+  - stream: Widget Review Stream
+    operations:
+    - listWidgetReviews
+    - getWidgetReviewsByHotelId
+    permitted_use: display and republishing (e.g. an on-site review widget)
+    display_permitted: true
+    constraint: >-
+      Excludes TripAdvisor and Yelp content due to content-licensing agreements with those partners,
+      so this stream is a strict subset of the Review Stream by source.
+cross_references:
+  authentication: authentication/revinate-authentication.yml
+  errors: errors/revinate-problem-types.yml
+  lifecycle: lifecycle/revinate-lifecycle.yml
+  rate_limits: rate-limits/revinate-rate-limits.yml
+  data_model: data-model/revinate-data-model.yml

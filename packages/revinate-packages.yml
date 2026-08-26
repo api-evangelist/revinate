@@ -1,0 +1,138 @@
+generated: '2026-08-26'
+method: searched
+source: >-
+  Maven Central (search.maven.org solrsearch g:com.revinate), registry.npmjs.org search,
+  pypi.org, rubygems.org, and https://github.com/revinate — all queried 2026-08-26.
+note: >-
+  Revinate publishes NO client SDK for the Porter API in any language. The documentation ships
+  inline HMAC-signing snippets for Shell, Java, Ruby and C# instead of a library. What Revinate does
+  publish to a package registry is a set of first-party engineering libraries under the com.revinate
+  Maven Central group, none of which wraps the Porter REST API. The newest of them was published on
+  2018-11-27 — nearly eight years before this probe — which is recorded here as a decay signal, not
+  as SDK coverage. Because no package targets the API being profiled, no `SDKs` pointer is emitted:
+  asserting one would credit Revinate with client-library coverage for an API that has none.
+sdk_for_profiled_api: false
+registries_checked:
+- registry: maven
+  query: 'g:com.revinate'
+  result: 9 artifacts
+- registry: npm
+  query: revinate
+  result: no first-party packages
+- registry: pypi
+  query: revinate
+  result: 404 — package does not exist
+- registry: rubygems
+  query: revinate / ship-sdk
+  result: no first-party gems (ship-sdk is on GitHub only, never published to RubyGems)
+- registry: packagist
+  query: revinate
+  result: not checked — GitHub PHP repos are all forks of third-party projects
+package_count: 9
+packages:
+- name: com.revinate:henicea
+  registry: maven
+  official: true
+  wraps_porter_api: false
+  version: 1.1.2
+  published: '2018-11-27'
+  purpose: Cassandra schema migrations for Spring Boot applications.
+  repo: https://github.com/revinate/henicea
+- name: com.revinate:ship-java
+  registry: maven
+  official: true
+  wraps_porter_api: false
+  version: 1.6.0
+  published: '2018-06-04'
+  purpose: Java bindings for SHIP (Simple Hospitality Interchange Protocol), a Revinate-authored hospitality data-exchange protocol.
+  repo: https://github.com/revinate/ship-java
+- name: com.revinate:assertj-json
+  registry: maven
+  official: true
+  wraps_porter_api: false
+  version: 1.2.0
+  published: '2018-05-17'
+  purpose: AssertJ assertions for validating JSON. Most-starred Revinate open-source project (28 stars).
+  repo: https://github.com/revinate/assertj-json
+- name: com.revinate:guava-rate-limiter
+  registry: maven
+  official: true
+  wraps_porter_api: false
+  version: '19.1'
+  published: '2018-04-21'
+  purpose: Standalone extraction of the rate-limiter implementation from Guava.
+  repo: https://github.com/revinate/guava-rate-limiter
+- name: com.revinate:sendgrid-java
+  registry: maven
+  official: true
+  wraps_porter_api: false
+  version: 3.0.6
+  published: '2017-10-19'
+  purpose: Revinate's fork of the SendGrid Java bindings.
+  repo: https://github.com/revinate/sendgrid-java
+- name: com.revinate:ship-scala_2.11
+  registry: maven
+  official: true
+  wraps_porter_api: false
+  version: 1.1.1
+  published: '2016-10-18'
+  purpose: Scala bindings for SHIP (Simple Hospitality Interchange Protocol).
+  repo: https://github.com/revinate/ship-scala
+- name: com.revinate:jaxws-spring
+  registry: maven
+  official: true
+  wraps_porter_api: false
+  version: 1.0.0
+  published: '2016-05-15'
+  purpose: JAX-WS (SOAP) integration with Spring.
+  repo: https://github.com/revinate/jaxws-spring
+- name: com.revinate:jaxws-spring-sample
+  registry: maven
+  official: true
+  wraps_porter_api: false
+  version: 1.0.0
+  published: '2016-05-15'
+  purpose: Sample application for the jaxws-spring integration.
+  repo: https://github.com/revinate/jaxws-spring
+- name: com.revinate:sendgrid-smtpapi-java
+  registry: maven
+  official: true
+  wraps_porter_api: false
+  version: 2.0.0
+  published: '2016-02-12'
+  purpose: Revinate's fork of the SendGrid SMTP API Java bindings.
+  repo: https://github.com/revinate/sendgrid-smtpapi-java
+unpublished_first_party_libraries:
+  note: >-
+    Published on GitHub but never released to a package registry, so there is no registry metadata
+    endpoint to read a version or date from. Version recorded as null deliberately: checked, nothing
+    to record — a consumer cannot resolve these by dependency manager at all.
+  libraries:
+  - name: ship-sdk
+    language: Ruby
+    version: null
+    published: null
+    registry: null
+    repo: https://github.com/revinate/ship-sdk
+    note: '"Simple Hospitality Interchange Protocol". Not on RubyGems — rubygems.org returns "This rubygem could not be found."'
+  - name: ship-js
+    language: JavaScript
+    version: null
+    published: null
+    registry: null
+    repo: https://github.com/revinate/ship-js
+    note: Not on npm.
+  - name: sequence
+    language: PHP
+    version: null
+    published: null
+    registry: null
+    repo: https://github.com/revinate/sequence
+    note: Composable functional processing library for PHP. Not verified on Packagist.
+decay_signal:
+  newest_first_party_release: '2018-11-27'
+  years_since_newest_release: 7.7
+  note: >-
+    Every first-party Revinate package on a public registry predates 2019. Combined with a Swagger
+    1.2 contract, this is consistent with a stable, maintained-but-not-evolving public API surface
+    rather than an actively developed developer platform.

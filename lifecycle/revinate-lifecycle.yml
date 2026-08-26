@@ -1,0 +1,75 @@
+generated: '2026-08-26'
+method: searched
+source: https://porter.revinate.com/documentation
+derived_from: openapi/revinate-porter-openapi.yml
+api: Revinate Porter API
+note: >-
+  Searched Revinate's developer documentation, marketing site and GitHub organization for a
+  versioning policy, deprecation policy, SLA, status page and changelog. None of the five is
+  published. What follows records that absence with the probes behind it rather than leaving the
+  artifact off; the version fact is real and comes from the contract itself.
+versioning:
+  scheme: none
+  current_version: '1.0'
+  version_source: apiVersion field of https://porter.revinate.com/api-docs
+  contract_format: Swagger 1.2
+  in_url: false
+  in_header: false
+  policy_published: false
+  note: >-
+    The contract is published in Swagger 1.2, a format deprecated in 2014 in favour of Swagger 2.0
+    and superseded twice since by OpenAPI 3.x. The format itself is the clearest lifecycle signal
+    available on this API: the interface description has not been modernised in over a decade.
+deprecation:
+  policy_published: false
+  policy_url: null
+  sunset_header: false
+  deprecation_header: false
+  rfc8594: false
+  deprecated_operations: []
+  note: >-
+    No deprecation policy, no notice period, and no RFC 8594 Sunset/Deprecation header support is
+    documented. No operation in the contract is flagged deprecated. A consumer has no stated warning
+    before a breaking change.
+sla:
+  published: false
+  url: null
+  note: No public SLA or uptime commitment for the Porter API was found.
+status_page:
+  present: false
+  url: null
+  probes:
+  - url: https://status.revinate.com/
+    status: '<no DNS response>'
+    note: Host does not resolve.
+  - url: https://trust.revinate.com/
+    status: 200
+    note: >-
+      A Vanta-hosted Trust Center exists but it is a security/compliance surface, not an operational
+      status or incident page, and it is fully client-side rendered.
+  note: >-
+    No status page, incident history or uptime feed was found on any Revinate host. Deliberately not
+    wired as a StatusPage pointer — asserting one would credit Revinate with a surface it does not serve.
+changelog:
+  present: false
+  url: null
+  note: >-
+    No dated changelog or release-notes page for the Porter API was found on the documentation host,
+    the marketing site, or the GitHub organization. Deliberately not wired as a ChangeLog pointer.
+support:
+  contact_email: support@revinate.com
+  contact_source: info.contact of https://porter.revinate.com/api-docs
+  support_url: https://www.revinate.com/support/
+  credential_issuance: >-
+    API keys and secrets are issued manually by a Revinate sales representative or account manager;
+    there is no self-service developer signup.
+maturity_signals:
+  contract_format_age: Swagger 1.2 (superseded 2014)
+  first_party_packages_last_published: '2018-11-27'
+  packages_detail: packages/revinate-packages.yml
+  read_only: true
+  note: >-
+    Three independent decay signals agree: a Swagger 1.2 contract, the newest first-party Maven
+    Central artifact dating to 2018, and a documentation page that references TripAdvisor ranking as
+    a headline metric. The API is live and answering today — every probe on 2026-08-26 returned a
+    real response — but it is not visibly evolving.

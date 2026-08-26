@@ -1,0 +1,112 @@
+generated: '2026-08-26'
+method: probed
+source: live responses from https://porter.revinate.com/ observed 2026-08-26
+derived_from: openapi/revinate-porter-openapi.yml
+format: custom-json
+rfc9457: false
+content_type: application/json;charset=UTF-8
+note: >-
+  Revinate publishes NO error reference for the Porter API. The published Swagger 1.2 resource
+  declarations at /api-docs declare no responseMessages, and the documentation page has no error
+  section. This catalog is therefore built from error envelopes observed live on unauthenticated
+  requests, plus the one error condition the documentation states in prose. It is deliberately short:
+  every entry below is something we actually saw or Revinate actually wrote, and no status code has
+  been invented to round the list out.
+envelope:
+  shape:
+    timestamp:
+      type: integer
+      description: Epoch milliseconds when the error was generated.
+    status:
+      type: integer
+      description: HTTP status code, duplicated inside the body.
+    error:
+      type: string
+      description: HTTP reason phrase, e.g. "Unauthorized".
+    message:
+      type: string
+      description: Human-readable message.
+    path:
+      type: string
+      description: The request path that produced the error.
+  machine_readable_code_field: null
+  gap: >-
+    There is no stable application-level error code. An agent can branch only on the HTTP status and
+    on prose in `message`, which is a fragile contract for automated remediation.
+problem_types:
+- id: unauthorized
+  status: 401
+  title: Unauthorized
+  observed: true
+  observed_at: '2026-08-26'
+  observed_on:
+  - https://porter.revinate.com/
+  - https://porter.revinate.com/openapi.json
+  message: Full authentication is required to access this resource
+  cause: >-
+    One or more of the four required authentication headers is missing, or the
+    X-Revinate-Porter-Encoded HMAC does not verify against the API secret for the supplied
+    username + timestamp.
+  remediation: >-
+    Send all four headers. Recompute the HMAC as HMAC_SHA256(apiSecret, username + timestamp),
+    hex-encoded, using the exact same timestamp value placed in X-Revinate-Porter-Timestamp.
+  retryable: false
+- id: stale-timestamp
+  status: 401
+  title: Unauthorized (timestamp outside tolerance)
+  observed: false
+  documented: true
+  cause: >-
+    X-Revinate-Porter-Timestamp is more than 5 minutes before or after the time the request reached
+    Revinate. Documented as a hard requirement on the authentication section.
+  remediation: >-
+    Resynchronise the calling host's clock and regenerate the timestamp AND the HMAC together — the
+    timestamp is part of the signed string, so a refreshed timestamp requires a refreshed signature.
+  retryable: true
+  retry_strategy: Regenerate credentials and retry immediately; do not replay the old signature.
+- id: forbidden
+  status: 403
+  title: Forbidden
+  observed: false
+  inferred: true
+  cause: >-
+    The API key is valid but is not entitled to the requested hotel, hotel set, or resource. The
+    documentation states the username "must be a username that has access to the resources
+    requested and to the API key used", and that access permissions are provisioned per key.
+  remediation: Ask your Revinate account manager to extend the key's access permissions.
+  retryable: false
+- id: not-found
+  status: 404
+  title: Not Found
+  observed: false
+  inferred: true
+  cause: The requested hotelId, hotelSetId, reviewId, languageId or reviewSiteId does not exist or is not visible to this key.
+  remediation: Enumerate valid ids from the corresponding collection endpoint before requesting a singular resource.
+  retryable: false
+- id: review-limit-exceeded
+  status: null
+  title: Review limit exceeded
+  observed: false
+  documented: true
+  source_quote: >-
+    "If your page and size parameters exceed the review limit, this endpoint returns an error."
+  source_url: https://porter.revinate.com/documentation
+  applies_to:
+  - listReviews
+  - getReviewsByHotelId
+  - getReviewsForHotelSet
+  cause: >-
+    The requested pagination window reaches beyond a per-key review limit. Distinct from an
+    out-of-range page, which returns an empty result set rather than an error.
+  remediation: >-
+    Reduce `size` (max 1000, default 5 for reviews) or narrow the request with the `date` range
+    filter. The limit is per-key and not published, so discover it empirically and back off.
+  retryable: false
+  note: >-
+    Revinate does not state which HTTP status this returns. Left null rather than guessed.
+gaps:
+  - No error reference page is published.
+  - No application-level error codes exist; only HTTP status plus prose.
+  - No responseMessages are declared in the Swagger 1.2 contract for any of the 22 operations.
+  - The status code for the documented review-limit error is unstated.
+  - No Retry-After or rate-limit headers are documented on any error.

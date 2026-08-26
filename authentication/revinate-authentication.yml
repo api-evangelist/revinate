@@ -1,0 +1,125 @@
+generated: '2026-08-26'
+method: searched
+source: https://porter.revinate.com/documentation
+docs: https://porter.revinate.com/documentation#authentication-and-access-control
+summary:
+  types:
+  - apiKey
+  - openIdConnect
+  api_key_in:
+  - header
+  models: 2
+note: >-
+  Revinate operates two separate and unrelated authentication models. The public Porter REST API
+  uses a bespoke four-header HMAC-SHA256 request-signing scheme with no OAuth and no scopes. The
+  Revinate web application (home.revinate.com) is fronted by an Auth0-backed OpenID Connect issuer
+  at auth.revinate.com. An integrator calling the Porter API uses only the first model.
+models:
+- id: porter-hmac
+  name: Porter API HMAC-SHA256 header signing
+  applies_to: https://porter.revinate.com
+  type: apiKey
+  transport: header
+  standard: false
+  description: >-
+    Every authenticated Porter resource requires four request headers. Three carry identity and the
+    fourth carries a keyed digest proving possession of the API secret. The secret itself is never
+    transmitted. Credentials are not self-service — the documentation directs integrators to contact
+    their Revinate sales representative or account manager for an API key and secret with the
+    appropriate access permissions.
+  headers:
+  - name: X-Revinate-Porter-Username
+    required: true
+    description: A username that has access both to the resources requested and to the API key used.
+  - name: X-Revinate-Porter-Timestamp
+    required: true
+    description: >-
+      Epoch-seconds timestamp. Must be within 5 minutes before or after the moment the request is
+      sent, which bounds replay of a captured signature to a 10-minute window.
+  - name: X-Revinate-Porter-Key
+    required: true
+    description: The API key issued by Revinate.
+  - name: X-Revinate-Porter-Encoded
+    required: true
+    description: >-
+      HMAC_SHA256(apiSecret, username + timestamp), hex-encoded. The signed string is the plain
+      concatenation of the username and the epoch-seconds timestamp; the API secret is the HMAC key.
+  signing:
+    algorithm: HMAC-SHA256
+    encoding: hexadecimal
+    signed_string: username + timestamp (string concatenation, no separator)
+    key: API secret issued by Revinate
+    replay_window_seconds: 300
+  credential_issuance: manual — via Revinate sales representative or account manager
+  self_service: false
+  observed_failure:
+    status: 401
+    body_shape: '{"timestamp":<epoch_ms>,"status":401,"error":"Unauthorized","message":"...","path":"..."}'
+    note: Observed live on 2026-08-26 against https://porter.revinate.com/ with no auth headers.
+  code_samples_published:
+  - Shell (openssl)
+  - Java (javax.crypto.Mac)
+  - Ruby (OpenSSL::HMAC)
+  - C# (System.Security.Cryptography.HMACSHA256)
+- id: revinate-oidc
+  name: Revinate application OpenID Connect
+  applies_to: https://home.revinate.com
+  type: openIdConnect
+  standard: true
+  openid_configuration: https://auth.revinate.com/.well-known/openid-configuration
+  issuer: https://auth.revinate.com/
+  authorization_endpoint: https://auth.revinate.com/authorize
+  token_endpoint: https://auth.revinate.com/oauth/token
+  userinfo_endpoint: https://auth.revinate.com/userinfo
+  jwks_uri: https://auth.revinate.com/.well-known/jwks.json
+  revocation_endpoint: https://auth.revinate.com/oauth/revoke
+  device_authorization_endpoint: https://auth.revinate.com/oauth/device/code
+  registration_endpoint: https://auth.revinate.com/oidc/register
+  mfa_challenge_endpoint: https://auth.revinate.com/mfa/challenge
+  pkce: true
+  pkce_methods:
+  - S256
+  - plain
+  id_token_signing_alg:
+  - RS256
+  - HS256
+  - PS256
+  provider: Auth0
+  description: >-
+    Full OIDC issuer securing the Revinate application UI. Supports authorization code with PKCE,
+    client credentials, refresh tokens, device code, and token exchange. Dynamic client registration
+    is advertised. This surface does not grant access to the Porter API.
+  scopes: scopes/revinate-scopes.yml
+schemes:
+- name: porterUsername
+  type: apiKey
+  in: header
+  parameter: X-Revinate-Porter-Username
+  description: Username with access to the requested resources and to the API key used.
+  sources:
+  - openapi/revinate-porter-openapi.yml
+  - https://porter.revinate.com/documentation
+- name: porterTimestamp
+  type: apiKey
+  in: header
+  parameter: X-Revinate-Porter-Timestamp
+  description: Epoch-seconds timestamp; must be within 5 minutes (before or after) of the request.
+  sources:
+  - openapi/revinate-porter-openapi.yml
+  - https://porter.revinate.com/documentation
+- name: porterKey
+  type: apiKey
+  in: header
+  parameter: X-Revinate-Porter-Key
+  description: API key issued by Revinate (contact your sales rep or account manager).
+  sources:
+  - openapi/revinate-porter-openapi.yml
+  - https://porter.revinate.com/documentation
+- name: porterEncoded
+  type: apiKey
+  in: header
+  parameter: X-Revinate-Porter-Encoded
+  description: HMAC_SHA256(apiSecret, username + timestamp), hex-encoded.
+  sources:
+  - openapi/revinate-porter-openapi.yml
+  - https://porter.revinate.com/documentation
