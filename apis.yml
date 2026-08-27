@@ -28,27 +28,16 @@ tags:
 - Marketing
 - Customer Feedback
 apis:
-- aid: revinate:porter
-  name: Revinate Porter API
-  description: 'The Porter API is Revinate''s structured review-data REST API. It provides
-    read access to hotel reviews aggregated across more than 100 review sites, plus key metrics
-    (review counts, average ratings, TripAdvisor rank) and hospitality-tuned sentiment analysis.
-    Two review streams exist and are not interchangeable: the Review Stream is licensed for
-    offline analysis only and may not be used for display, while the Widget Review Stream is
-    licensed for display and republishing but excludes TripAdvisor and Yelp content. All 22
-    operations are GET; the API is read-only. Authentication is a four-header HMAC-SHA256
-    scheme keyed on an API secret issued by Revinate.'
+- aid: revinate:revinate-hotel-sets-api
+  name: Revinate Hotel Sets API
+  description: The Hotel Sets API from Revinate — 4 operation(s) for hotel sets.
   humanURL: https://porter.revinate.com/documentation
   baseURL: https://porter.revinate.com
   tags:
-  - Reviews
-  - Hotels
-  - Sentiment Analysis
-  - Reputation Management
-  - Hospitality
+  - Hotel Sets
   properties:
   - type: OpenAPI
-    url: openapi/revinate-porter-openapi.yml
+    url: openapi/revinate-hotel-sets-api-openapi.yml
   - type: Swagger
     url: openapi/_original/revinate-porter-api-docs-resource-listing.json
   - type: Documentation
@@ -65,16 +54,146 @@ apis:
     url: data-model/revinate-data-model.yml
   - type: RateLimits
     url: rate-limits/revinate-rate-limits.yml
-  - type: Overlay
-    url: overlays/revinate-porter-overlay.yaml
-  - type: AgentSkill
-    url: skills/_index.yml
+- aid: revinate:revinate-hotels-api
+  name: Revinate Hotels API
+  description: The Hotels API from Revinate — 11 operation(s) for hotels.
+  humanURL: https://porter.revinate.com/documentation
+  baseURL: https://porter.revinate.com
+  tags:
+  - Hotels
+  properties:
+  - type: OpenAPI
+    url: openapi/revinate-hotels-api-openapi.yml
+  - type: Swagger
+    url: openapi/_original/revinate-porter-api-docs-resource-listing.json
+  - type: Documentation
+    url: https://porter.revinate.com/documentation
+  - type: APIReference
+    url: https://porter.revinate.com/documentation#api-docs
+  - type: Authentication
+    url: authentication/revinate-authentication.yml
+  - type: Conventions
+    url: conventions/revinate-conventions.yml
+  - type: ErrorCatalog
+    url: errors/revinate-problem-types.yml
+  - type: DataModel
+    url: data-model/revinate-data-model.yml
+  - type: RateLimits
+    url: rate-limits/revinate-rate-limits.yml
+- aid: revinate:revinate-languages-api
+  name: Revinate Languages API
+  description: The Languages API from Revinate — 2 operation(s) for languages.
+  humanURL: https://porter.revinate.com/documentation
+  baseURL: https://porter.revinate.com
+  tags:
+  - Languages
+  properties:
+  - type: OpenAPI
+    url: openapi/revinate-languages-api-openapi.yml
+  - type: Swagger
+    url: openapi/_original/revinate-porter-api-docs-resource-listing.json
+  - type: Documentation
+    url: https://porter.revinate.com/documentation
+  - type: APIReference
+    url: https://porter.revinate.com/documentation#api-docs
+  - type: Authentication
+    url: authentication/revinate-authentication.yml
+  - type: Conventions
+    url: conventions/revinate-conventions.yml
+  - type: ErrorCatalog
+    url: errors/revinate-problem-types.yml
+  - type: DataModel
+    url: data-model/revinate-data-model.yml
+  - type: RateLimits
+    url: rate-limits/revinate-rate-limits.yml
+- aid: revinate:revinate-review-sites-api
+  name: Revinate Review Sites API
+  description: The Review Sites API from Revinate — 2 operation(s) for review sites.
+  humanURL: https://porter.revinate.com/documentation
+  baseURL: https://porter.revinate.com
+  tags:
+  - Review Sites
+  properties:
+  - type: OpenAPI
+    url: openapi/revinate-review-sites-api-openapi.yml
+  - type: Swagger
+    url: openapi/_original/revinate-porter-api-docs-resource-listing.json
+  - type: Documentation
+    url: https://porter.revinate.com/documentation
+  - type: APIReference
+    url: https://porter.revinate.com/documentation#api-docs
+  - type: Authentication
+    url: authentication/revinate-authentication.yml
+  - type: Conventions
+    url: conventions/revinate-conventions.yml
+  - type: ErrorCatalog
+    url: errors/revinate-problem-types.yml
+  - type: DataModel
+    url: data-model/revinate-data-model.yml
+  - type: RateLimits
+    url: rate-limits/revinate-rate-limits.yml
+- aid: revinate:revinate-reviews-api
+  name: Revinate Reviews API
+  description: The Reviews API from Revinate — 2 operation(s) for reviews.
+  humanURL: https://porter.revinate.com/documentation
+  baseURL: https://porter.revinate.com
+  tags:
+  - Reviews
+  properties:
+  - type: OpenAPI
+    url: openapi/revinate-reviews-api-openapi.yml
+  - type: Swagger
+    url: openapi/_original/revinate-porter-api-docs-resource-listing.json
+  - type: Documentation
+    url: https://porter.revinate.com/documentation
+  - type: APIReference
+    url: https://porter.revinate.com/documentation#api-docs
+  - type: Authentication
+    url: authentication/revinate-authentication.yml
+  - type: Conventions
+    url: conventions/revinate-conventions.yml
+  - type: ErrorCatalog
+    url: errors/revinate-problem-types.yml
+  - type: DataModel
+    url: data-model/revinate-data-model.yml
+  - type: RateLimits
+    url: rate-limits/revinate-rate-limits.yml
+- aid: revinate:revinate-widget-reviews-api
+  name: Revinate Widget Reviews API
+  description: The Widget Reviews API from Revinate — 1 operation(s) for widget reviews.
+  humanURL: https://porter.revinate.com/documentation
+  baseURL: https://porter.revinate.com
+  tags:
+  - Widget Reviews
+  properties:
+  - type: OpenAPI
+    url: openapi/revinate-widget-reviews-api-openapi.yml
+  - type: Swagger
+    url: openapi/_original/revinate-porter-api-docs-resource-listing.json
+  - type: Documentation
+    url: https://porter.revinate.com/documentation
+  - type: APIReference
+    url: https://porter.revinate.com/documentation#api-docs
+  - type: Authentication
+    url: authentication/revinate-authentication.yml
+  - type: Conventions
+    url: conventions/revinate-conventions.yml
+  - type: ErrorCatalog
+    url: errors/revinate-problem-types.yml
+  - type: DataModel
+    url: data-model/revinate-data-model.yml
+  - type: RateLimits
+    url: rate-limits/revinate-rate-limits.yml
 maintainers:
 - FN: Kin Lane
   email: kin@apievangelist.com
 - FN: APIs.json
   email: info@apis.io
 common:
+- type: Overlay
+  url: overlays/revinate-porter-overlay.yaml
+- type: AgentSkill
+  url: skills/_index.yml
 - type: Website
   url: https://www.revinate.com/
 - type: DeveloperPortal
