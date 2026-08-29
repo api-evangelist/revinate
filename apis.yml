@@ -10,6 +10,18 @@ description: 'Revinate is a hospitality technology company providing a Guest Dat
   and rating snapshots, survey email statistics, and hospitality-specific sentiment analysis
   broken out by topic category.'
 url: https://raw.githubusercontent.com/api-evangelist/revinate/refs/heads/main/apis.yml
+deliveryModel:
+  model: saas
+  open_source: false
+  commercial: true
+  callable_host: true
+  label: Hosted service · you call their endpoint
+  confidence: high
+  source:
+  - openapi
+  - pricing
+  generated: '2026-08-28'
+  method: derived
 image: https://www.revinate.com/wp-content/uploads/2022/09/revinate-logo-400px.png
 x-type: company
 x-source: harvest:secondary-market
