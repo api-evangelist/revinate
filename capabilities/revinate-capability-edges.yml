@@ -1,0 +1,38 @@
+slug: revinate
+provider: Revinate
+generated_by: planning/capability-mapping/scripts/classify_capabilities.py
+model: claude-opus-5
+frame:
+- Travel & Hospitality
+min_confidence: 0.7
+capability_model:
+  source: https://github.com/vincentmakes/turbo-ea-capabilities
+  license: CC-BY-4.0
+  attribution: Turbo EA Capabilities by Vincent Verdet — Turbo EA, https://github.com/vincentmakes/turbo-ea-capabilities,
+    CC BY 4.0
+  notice: NOTICE
+edge_count: 2
+edges:
+- tag: Hotels
+  spec_file: revinate-hotels-api-openapi.yml
+  capability_id: BC-430.50
+  capability_id_l1: BC-430
+  capability_name: Customer Feedback Management
+  confidence: 0.8
+  evidence: GET /hotels/{hotelId}/reviews  getReviewsByHotelId; GET /hotels/{hotelId}/surveyemailstats  Get
+    survey email statistics for hotel; GET /hotels/{hotelId}/topiccategoriessnapshot  Get category level
+    sentiment analysis for hotel
+  reason: Despite the 'Hotels' tag string, the operations retrieve guest reviews, review snapshots, sentiment
+    analysis and survey email statistics for a hotel — reputation and guest-feedback management (voice-of-customer).
+    Some ambiguity only because competitor review streams also touch competitive intelligence.
+- tag: Reviews
+  spec_file: revinate-reviews-api-openapi.yml
+  capability_id: BC-430.50
+  capability_id_l1: BC-430
+  capability_name: Customer Feedback Management
+  confidence: 0.8
+  evidence: GET /reviews  listReviews  Get Reviews; 'Revinate's structured review data API ... hotel reviews
+    across 100+ review sites, with key metrics (review counts, average ratings), sentiment analysis'
+  reason: Operations retrieve structured guest reviews with ratings and sentiment for offline analysis
+    — voice-of-customer / guest feedback and reputation management. Clear capability; minor ambiguity
+    between feedback management and market intelligence.
