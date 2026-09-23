@@ -2,13 +2,7 @@ openapi: 3.2.0
 info:
   title: Revinate Porter Widget Reviews API
   version: '1.0'
-  description: 'Revinate''s structured review data API. Provides access to hotel reviews across 100+ review sites, with key metrics (review counts, average ratings), sentiment analysis, competitor review streams and survey email statistics.
-
-
-    Two review streams exist and they are not interchangeable: the Review Stream (/reviews, /hotels/{hotelId}/reviews) is for offline analysis and its content may NOT be used for display, while the Widget Review Stream (/widgetreviews) is licensed for display/republishing but excludes TripAdvisor and Yelp content under content-licensing agreements with those partners.
-
-
-    CONVERSION NOTE: Revinate publishes this contract as Swagger 1.2 at https://porter.revinate.com/api-docs. This OpenAPI 3.1.0 document is a faithful mechanical conversion of the six published Swagger 1.2 resource declarations by API Evangelist; the verbatim originals are preserved in openapi/_original/. Operation IDs were made unique (the published nickname "get" is reused across all six resources).'
+  description: Revinate's structured review data API.
   contact:
     name: Revinate Support
     email: support@revinate.com
