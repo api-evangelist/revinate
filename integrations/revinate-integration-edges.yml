@@ -1,16 +1,68 @@
 generated: '2026-10-12'
-method: none
+method: searched
 source:
 - https://zapier.com/apps/revinate/integrations
 - https://n8n.io/integrations/revinate/
 - https://composio.dev/toolkits/revinate
 - https://monid.ai/tools/revinate
 checked:
+- apaleo/integrations/apaleo-integration-edges.yml
+- guesty/integrations/guesty-integration-edges.yml
 - https://composio.dev/toolkits/revinate
 - https://monid.ai/tools/revinate
 - https://n8n.io/integrations/revinate/
 - https://zapier.com/apps/revinate/integrations
+- mews-com/integrations/mews-com-integration-edges.yml
 summary: null
 marketplace_apps: []
-edges: []
+edges:
+- partner_name: apaleo (own)
+  partner: apaleo
+  partner_match: mirror
+  mirror_match: domain
+  type: marketplace
+  relationship: platform-app
+  direction: third-party
+  channel: partner-built
+  marketplace: own
+  evidence: https://store.apaleo.com/apps/revinate
+  mirror_of: apaleo/integrations/apaleo-integration-edges.yml
+  apps:
+  - Revinate
+  listing_count: 1
+  detected: '2026-10-14'
+  detected_by: mirror-platform-listings.py
+  category: CRM & email marketing platforms
+- partner_name: Guesty (own)
+  partner: guesty
+  partner_match: mirror
+  mirror_match: domain
+  type: marketplace
+  relationship: platform-app
+  direction: third-party
+  channel: partner-built
+  marketplace: own
+  evidence: https://www.guesty.com/marketplace-items/revinate/
+  mirror_of: guesty/integrations/guesty-integration-edges.yml
+  apps:
+  - Revinate
+  listing_count: 1
+  detected: '2026-10-14'
+  detected_by: mirror-platform-listings.py
+- partner_name: Mews (own)
+  partner: mews-com
+  partner_match: mirror
+  mirror_match: domain
+  type: marketplace
+  relationship: platform-app
+  direction: third-party
+  channel: partner-built
+  marketplace: own
+  evidence: https://www.mews.com/en/products/marketplace/revinate
+  mirror_of: mews-com/integrations/mews-com-integration-edges.yml
+  apps:
+  - Revinate
+  listing_count: 1
+  detected: '2026-10-14'
+  detected_by: mirror-platform-listings.py
 templates: []
