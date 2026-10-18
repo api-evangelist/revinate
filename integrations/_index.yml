@@ -40,3 +40,34 @@
   relationship: platform-app
   status: not-a-workflow
   arazzo: null
+- slug: revinate-meltano
+  label: Meltano
+  partner: meltano
+  partner_name: Meltano
+  type: marketplace
+  marketplace: meltano-hub
+  channel: elt-connector
+  evidence: https://hub.meltano.com/extractors/tap-revinate--bytecodeio
+  source: edge
+  relationship: ipaas-bridge
+  contract_reference:
+    register: Meltano Hub (github.com/meltano/hub _data/meltano extractors + loaders)
+    spec_file: null
+    role: elt-connector:meltano-hub
+    registered_name: Revinate
+    matched_domain: revinate.com
+    matched_by: domain
+    detected_by: sweep-data-integration.py
+    detected: '2026-10-18'
+    signal_note: one edge per (provider, platform); connectors, streams, packages and usage are context, never read
+    plugins:
+    - tap-revinate--bytecodeio
+    - tap-revinate--singer-io
+    maintenance_status:
+    - unknown
+    quality:
+    - bronze
+    - unknown
+    builder: 'community (Meltano Hub variant maintainers: bytecodeio, singer-io)'
+  status: pending-partner-spec
+  arazzo: null
