@@ -69,5 +69,5 @@
     - bronze
     - unknown
     builder: 'community (Meltano Hub variant maintainers: bytecodeio, singer-io)'
-  status: pending-partner-spec
+  status: not-a-workflow
   arazzo: null
