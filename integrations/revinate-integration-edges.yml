@@ -8,10 +8,17 @@ source:
 checked:
 - apaleo/integrations/apaleo-integration-edges.yml
 - guesty/integrations/guesty-integration-edges.yml
+- https://api.nuget.org/v3
 - https://composio.dev/toolkits/revinate
+- https://crates.io/api/v1
 - https://github.com/meltano/hub
 - https://monid.ai/tools/revinate
 - https://n8n.io/integrations/revinate/
+- https://proxy.golang.org
+- https://pypi.org/pypi
+- https://registry.npmjs.org
+- https://repo1.maven.org/maven2
+- https://rubygems.org/api/v1
 - https://zapier.com/apps/revinate/integrations
 - mews-com/integrations/mews-com-integration-edges.yml
 summary: null
@@ -96,5 +103,107 @@ edges:
     - unknown
     builder: 'community (Meltano Hub variant maintainers: bytecodeio, singer-io)'
   detected_by: sweep-data-integration.py
+  first_seen: '2026-10-18'
+- partner_name: Maven Central
+  partner: maven-central
+  partner_match: register
+  type: register
+  direction: provider-built
+  category: official SDK (Java/JVM)
+  evidence: https://central.sonatype.com/artifact/com.revinate/assertj-json
+  channel: package-registry
+  relationship: distribution-channel
+  contract_reference:
+    register: Maven Central (public registry JSON)
+    spec_file: null
+    language: Java/JVM
+    packages:
+    - name: com.revinate:assertj-json
+      version: 1.2.0
+      released: '2018-05-17'
+      released_field: lastUpdated
+      lapsed: true
+      page: https://central.sonatype.com/artifact/com.revinate/assertj-json
+      repo_leg: github-org:revinate
+      publisher_leg: groupId:revinate.com
+      matched_by: domain
+    - name: com.revinate:guava-rate-limiter
+      version: '19.1'
+      released: '2018-04-21'
+      released_field: lastUpdated
+      lapsed: true
+      page: https://central.sonatype.com/artifact/com.revinate/guava-rate-limiter
+      repo_leg: github-org:revinate
+      publisher_leg: groupId:revinate.com
+      matched_by: domain
+    - name: com.revinate:henicea
+      version: 1.1.2
+      released: '2018-11-28'
+      released_field: lastUpdated
+      lapsed: true
+      page: https://central.sonatype.com/artifact/com.revinate/henicea
+      repo_leg: github-org:revinate
+      publisher_leg: groupId:revinate.com
+      matched_by: domain
+    - name: com.revinate:jaxws-spring
+      version: 1.0.0
+      released: '2016-05-15'
+      released_field: lastUpdated
+      lapsed: true
+      page: https://central.sonatype.com/artifact/com.revinate/jaxws-spring
+      repo_leg: github-org:revinate
+      publisher_leg: groupId:revinate.com
+      matched_by: domain
+    - name: com.revinate:jaxws-spring-sample
+      version: 1.0.0
+      released: '2016-05-15'
+      released_field: lastUpdated
+      lapsed: true
+      page: https://central.sonatype.com/artifact/com.revinate/jaxws-spring-sample
+      repo_leg: github-org:revinate
+      publisher_leg: groupId:revinate.com
+      matched_by: domain
+    - name: com.revinate:sendgrid-java
+      version: 3.0.6
+      released: '2017-10-19'
+      released_field: lastUpdated
+      lapsed: true
+      page: https://central.sonatype.com/artifact/com.revinate/sendgrid-java
+      repo_leg: github-org:revinate
+      publisher_leg: groupId:revinate.com
+      matched_by: domain
+    - name: com.revinate:sendgrid-smtpapi-java
+      version: 2.0.0
+      released: '2016-02-12'
+      released_field: lastUpdated
+      lapsed: true
+      page: https://central.sonatype.com/artifact/com.revinate/sendgrid-smtpapi-java
+      repo_leg: github-org:revinate
+      publisher_leg: groupId:revinate.com
+      matched_by: domain
+    - name: com.revinate:ship-java
+      version: 1.6.0
+      released: '2018-06-04'
+      released_field: lastUpdated
+      lapsed: true
+      page: https://central.sonatype.com/artifact/com.revinate/ship-java
+      repo_leg: github-org:revinate
+      publisher_leg: groupId:revinate.com
+      matched_by: domain
+    - name: com.revinate:ship-scala_2.11
+      version: 1.1.1
+      released: '2016-10-18'
+      released_field: lastUpdated
+      lapsed: true
+      page: https://central.sonatype.com/artifact/com.revinate/ship-scala_2.11
+      repo_leg: github-org:revinate
+      publisher_leg: groupId:revinate.com
+      matched_by: domain
+    current: false
+    signal_note: 'an official package on the registry: distribution, not an integration; lapsed = no release in
+      24 months'
+    detected_by: sweep-official-sdks.py
+    detected: '2026-10-18'
+  detected_by: sweep-official-sdks.py
   first_seen: '2026-10-18'
 templates: []
